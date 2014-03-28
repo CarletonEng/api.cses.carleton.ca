@@ -1,0 +1,5 @@
+__pycache
+__pycache__
+*.pyo
+*.pyc
+*.sqlite
