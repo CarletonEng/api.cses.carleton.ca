@@ -45,7 +45,7 @@ class Handler(framework.Handler):
 	"""
 	def before(self):
 		if (getattr(self.__class__, "origin_any", False) or
-		    originre.match(self.req.headers["Origin"])):
+		    originre.match(self.req.headers.get("Origin", ""))):
 			self.headers["Access-Control-Allow-Origin"] = self.req.headers.get("Origin", "")
 		
 		self.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
