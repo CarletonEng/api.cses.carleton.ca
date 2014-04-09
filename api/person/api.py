@@ -74,8 +74,10 @@ class person(api.Handler):
 	@api.json_out
 	def GET(self, p):
 		return {"e":0,
-			"name": p.name,
-			"perm": p.perms,
+			"id":       p.id,
+			"name":     p.name,
+			"namefull": p.namefull,
+			"perm":     p.perm,
 		}
 	
 	@fetchuser
@@ -84,12 +86,10 @@ class person(api.Handler):
 	def PUT(self, p):
 		j = self.req.json
 		
-		print("auth:", self.req.auth)
-		print(self.req.auth.user)
-		print(self.req.auth.user.perms)
-		
 		if "name" in j:
 			p.name = j["name"]
+		if "namefull" in j:
+			p.namefull = j["namefull"]
 		
 		self.dbs.commit()
 		return {"e":0}

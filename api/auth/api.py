@@ -32,6 +32,18 @@ from api.auth import Auth
 
 @api.app.route("/auth")
 class index(api.Handler):
+	@api.dbs
+	@api.auth.auth
+	@api.json_out
+	def GET(self):
+		if not self.req.auth:
+			return {"e": 401, "msg": "Not authorized."}
+		
+		return {"e": 0,
+			"perm": self.req.auth.perm,
+			"user": self.req.auth.user.id,
+		}
+	
 	@api.json_io
 	@api.dbs
 	def POST(self):
@@ -52,9 +64,13 @@ class index(api.Handler):
 		
 		a = Auth(p)
 		s.add(a)
+		
+		a.perm = [perm.name for perm in p.perm]
+		
 		s.commit()
 		
-		return {
-			"e": 0,
+		return {"e": 0,
 			"token": a.token,
+			"perm": a.perm,
+			"user": a.user.id,
 		}

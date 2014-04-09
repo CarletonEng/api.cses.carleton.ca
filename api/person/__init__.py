@@ -46,15 +46,16 @@ class Person(db.Base):
 	
 	__tablename__ = 'person'
 	
-	id   = db.Column(db.Hex, primary_key=True)
-	name = db.Column(db.String)
-	__pw = db.Column(db.String, server_default="!")
+	id       = db.Column(db.Hex, primary_key=True)
+	name     = db.Column(db.String)
+	namefull = db.Column(db.String)
+	__pw     = db.Column(db.String, server_default="!")
 	
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
-	perms = db.relationship("Perm", cascade="all, delete-orphan", lazy="joined",
-	                         backref=db.backref("user", lazy="joined"))
+	perm = db.relationship("Perm", cascade="all, delete-orphan", lazy="joined",
+	                        backref=db.backref("user", lazy="joined"))
 	
 	def password_set(self, pw):
 		""" Set the password """
@@ -66,9 +67,9 @@ class Person(db.Base):
 	
 	def perm_has(self, perm):
 		""" Check if person has permission `perm` """
-		return Perm(perm) in self.perms
+		return Perm(perm) in self.perm
 	
 	def __repr__(self):
 		return "Person({}, {}, perms={})".format(self.id,
 		                                         repr(self.name),
-		                                         repr(self.perms))
+		                                         repr(self.perm))

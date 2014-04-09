@@ -24,12 +24,15 @@
 #                                                                              #
 ################################################################################
 
+import re
 import json
 
 import api.framework
 import api.db as db
 
 app = framework.App()
+
+originre = re.compile("https?://(cses.carleton.ca|localhost)(:[0-9]+)?$")
 
 class Handler(framework.Handler):
 	""" A handler for the API.
@@ -38,21 +41,19 @@ class Handler(framework.Handler):
 		overhead to the request.  The features are documented below.
 		
 		CORS:
-			To allow CORS requests define the class variable `origins_allowed`.
-			If this variable is present it is a list of origins that are allowed
-			to access this host.  Note that `["*"]` can be used to allow all
-			hosts.
+			This function controls CORS.  By default it allows from
 	"""
 	def before(self):
-		try:
-			o = self.__class__.origins_allowed
-			
-			self.headers["Access-Control-Allow-Origin"]  = ", ".join(o)
-			self.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-			self.headers["Access-Control-Allow-Headers"] = "Accept, Authorization, Content-Type"
-			self.headers["Access-Control-Max-Age"]       = "31536000"
-		except:
-			pass
+		if (getattr(self.__class__, "origin_any", False) or
+		    originre.match(self.req.headers["Origin"])):
+			self.headers["Access-Control-Allow-Origin"] = self.req.headers.get("Origin", "")
+		
+		self.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+		self.headers["Access-Control-Allow-Headers"] = "Accept, Authorization, Content-Type"
+		self.headers["Access-Control-Max-Age"]       = "31536000"
+	
+	def OPTIONS(self, *args):
+		pass
 
 def dbs(f):
 	""" Use a database session for a handler.
@@ -83,7 +84,7 @@ def json_in(f):
 		self.max_content_length = 4*1024*1024
 		
 		self.req.json = None
-		if self.req.headers.get("Content-Type") == "application/json":
+		if self.req.mimetype != "application/json":
 			try:
 				self.req.json = json.loads(self.req.get_data(as_text=True))
 			except: pass
@@ -111,7 +112,7 @@ def json_io(f):
 		of said function is then formatted as json and written to the response.
 	"""
 	def w(self, *args):
-		if self.req.headers.get("Content-Type") != "application/json":
+		if self.req.mimetype != "application/json":
 			self.status_code = 400
 			self.data = '{"e":400,"msg":"Content-Type must be application/json."}\n'
 			return

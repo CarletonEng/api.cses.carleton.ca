@@ -64,6 +64,7 @@ class Auth(db.Base):
 	__pass   = db.Column(db.String)
 	__ctime  = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 	__userid = db.Column(db.Hex, db.ForeignKey("person.id"))
+	perm     = db.Column(db.JSON);
 	
 	@staticmethod
 	def fromtoken(dbs, tok):

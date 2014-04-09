@@ -25,6 +25,7 @@
 ################################################################################
 
 import math
+import json
 from binascii import hexlify, unhexlify
 
 import sqlalchemy
@@ -81,3 +82,12 @@ class HexLong(TypeDecorator):
 	
 	def process_result_value(self, value, dialect):
 		return hexlify(value).decode().upper()
+
+class JSON(TypeDecorator):
+	impl = String
+	
+	def process_bind_param(self, value, dialect):
+		return json.dumps(value)
+	
+	def process_result_value(self, value, dialect):
+		return value and json.loads(value)
