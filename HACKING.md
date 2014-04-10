@@ -18,5 +18,5 @@ Congratulations.  You have the API up and running.
 ## Directory layout.
 
 The directory layout matches the URL patterns.  For example `/auth/*` goes in
-the `auth/` directory.  The actual http API components go in `api.py` in that
-directory and the internal python API go in the `__init__.py` file.
+the `auth/` directory.  The actual http API components go in `handler.py` in
+that directory and the internal python API go in the `__init__.py` file.

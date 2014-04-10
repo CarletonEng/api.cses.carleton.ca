@@ -134,6 +134,6 @@ class index(framework.Handler):
 		self.headers["Cache-Control"] = "public, max-age=31536000"
 		self.data = "This is the API, go away.\n"
 
-import api.person.api
-import api.auth.api
-import api.perm.api
+import api.person.handler
+import api.auth.handler
+import api.perm.handler
