@@ -35,10 +35,7 @@ def auth(uid, tok, perms=None):
 	p = sess.query(Person).get(uid)
 	a = Auth(p)
 	a.neverusethisinsecuremethod_set(id,pw)
-	if perms is None:
-		a.perms = [perm.name for perm in p.perms]
-	else:
-		a.perms = perms
+	a.perms = p.perms if perms is None else perms
 	sess.add(a)
 	return a
 

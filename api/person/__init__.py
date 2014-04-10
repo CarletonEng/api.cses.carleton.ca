@@ -28,7 +28,6 @@ from crypt import crypt
 from hmac import compare_digest
 
 import api.db as db
-from api.perm import Perm
 
 class Person(db.Base):
 	""" A person.
@@ -41,7 +40,7 @@ class Person(db.Base):
 			auths:
 				A list of Auth objects that apply to the user.
 			perms:
-				A list of Perm objects that the user has.
+				A list of strings representing the permissions the user has.
 	"""
 	
 	__tablename__ = 'person'
@@ -50,12 +49,11 @@ class Person(db.Base):
 	name     = db.Column(db.String)
 	namefull = db.Column(db.String)
 	__pw     = db.Column(db.String, server_default="!")
+	perms    = db.Column(db.JSON, default=lambda:[]);
 	
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
-	perms = db.relationship("Perm", cascade="all, delete-orphan", lazy="joined",
-	                        backref=db.backref("user", lazy="joined"))
 	
 	def password_set(self, pw):
 		""" Set the password """
@@ -64,10 +62,6 @@ class Person(db.Base):
 	def password_check(self, pw):
 		""" Check if password is correct """
 		return compare_digest(crypt(pw, self.__pw), self.__pw)
-	
-	def perm_has(self, perm):
-		""" Check if person has permission `perm` """
-		return Perm(perm) in self.perms
 	
 	def __repr__(self):
 		return "Person({}, {}, perms={})".format(self.id,

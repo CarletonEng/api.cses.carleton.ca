@@ -136,4 +136,3 @@ class index(framework.Handler):
 
 import api.person.handler
 import api.auth.handler
-import api.perm.handler

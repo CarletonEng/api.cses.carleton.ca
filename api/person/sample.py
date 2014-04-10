@@ -29,7 +29,7 @@ from api.person import Person
 
 sess = db.Session()
 
-def person(name, full, pw):
+def person(name, full, pw, perms):
 	p = Person()
 	p.name = name
 	p.namefull = full
@@ -37,9 +37,9 @@ def person(name, full, pw):
 	sess.add(p)
 	return p
 
-person("Kevin", "Kevin Cox", "passwd")
-person("Jane", "Jane Smith", "enaj")
-person("John", "John Doe", "password1")
-person("Jason Grey", "Jason Grey", "topsecret")
+person("Kevin", "Kevin Cox", "passwd", ["selfw","selfr","personr","personw"])
+person("Jane", "Jane Smith", "enaj", ["selfr","selfw"])
+person("John", "John Doe", "password1", ["selfr","selfw"])
+person("Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])
 
 sess.commit()

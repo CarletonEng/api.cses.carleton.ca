@@ -65,7 +65,7 @@ class index(api.Handler):
 		a = Auth(p)
 		s.add(a)
 		
-		a.perms = [perm.name for perm in p.perms]
+		a.perms = p.perms
 		
 		s.commit()
 		

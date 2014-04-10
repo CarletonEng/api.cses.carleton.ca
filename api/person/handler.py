@@ -27,7 +27,7 @@
 import api
 import api.db as db
 from api.person import Person
-from api.auth import Auth, auth
+from api.auth import Auth, auth, authrequired
 
 def fetchuser(f):
 	""" Converts first argument to Person from id."""
@@ -51,10 +51,14 @@ def fetchuser(f):
 
 @api.app.route("/person")
 class index(api.Handler):
+	@authrequired
 	@api.json_io
 	@api.dbs
 	def PUT(self):
 		j = self.req.json
+		
+		if "personw" not in self.req.auth.user.perms:
+			return {"e":403,"msg":"You don't have permission to do that."}
 		
 		p = Person()
 		self.dbs.add(p)
@@ -71,13 +75,20 @@ class index(api.Handler):
 @api.app.route("/person/([^/]*)")
 class person(api.Handler):
 	@fetchuser
+	@auth
 	@api.json_out
 	def GET(self, p):
+		requser = self.req.auth and self.req.auth.user
+		all = ( requser and (
+			"personr" in requser.perms or
+			requser == p and "selfr" in requser.perms
+		))
+		
 		return {"e":0,
 			"id":       p.id,
 			"name":     p.name,
 			"namefull": p.namefull,
-			"perms":    p.perms,
+			"perms":    p.perms if all else None,
 		}
 	
 	@fetchuser
