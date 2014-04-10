@@ -47,10 +47,10 @@ class Perm(db.Base):
 		self.name = name
 	
 	def __eq__(self, that):
-		if instanceof(that, Perm):
-			return this.name == that.name
+		if isinstance(that, Perm):
+			return self.name == that.name
 		else:
-			return this.name == that
+			return self.name == that
 	
 	def __repr__(self):
 		return "Perm({}, {})".format(self.name, repr(self.user))
