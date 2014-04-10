@@ -33,12 +33,9 @@ from api.auth import Auth
 @api.app.route("/auth")
 class index(api.Handler):
 	@api.dbs
-	@api.auth.auth
+	@api.auth.authrequired
 	@api.json_out
 	def GET(self):
-		if not self.req.auth:
-			return {"e": 401, "msg": "Not authorized."}
-		
 		return {"e": 0,
 			"perms": self.req.auth.perms,
 			"user": self.req.auth.user.id,
