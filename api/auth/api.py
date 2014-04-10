@@ -40,7 +40,7 @@ class index(api.Handler):
 			return {"e": 401, "msg": "Not authorized."}
 		
 		return {"e": 0,
-			"perm": self.req.auth.perm,
+			"perms": self.req.auth.perms,
 			"user": self.req.auth.user.id,
 		}
 	
@@ -65,12 +65,12 @@ class index(api.Handler):
 		a = Auth(p)
 		s.add(a)
 		
-		a.perm = [perm.name for perm in p.perm]
+		a.perms = [perm.name for perm in p.perms]
 		
 		s.commit()
 		
 		return {"e": 0,
 			"token": a.token,
-			"perm": a.perm,
+			"perms": a.perms,
 			"user": a.user.id,
 		}

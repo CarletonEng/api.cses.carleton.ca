@@ -77,7 +77,7 @@ class person(api.Handler):
 			"id":       p.id,
 			"name":     p.name,
 			"namefull": p.namefull,
-			"perm":     p.perm,
+			"perms":    p.perms,
 		}
 	
 	@fetchuser

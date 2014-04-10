@@ -54,7 +54,7 @@ class Person(db.Base):
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
-	perm = db.relationship("Perm", cascade="all, delete-orphan", lazy="joined",
+	perms = db.relationship("Perm", cascade="all, delete-orphan", lazy="joined",
 	                        backref=db.backref("user", lazy="joined"))
 	
 	def password_set(self, pw):
@@ -67,9 +67,9 @@ class Person(db.Base):
 	
 	def perm_has(self, perm):
 		""" Check if person has permission `perm` """
-		return Perm(perm) in self.perm
+		return Perm(perm) in self.perms
 	
 	def __repr__(self):
 		return "Person({}, {}, perms={})".format(self.id,
 		                                         repr(self.name),
-		                                         repr(self.perm))
+		                                         repr(self.perms))
