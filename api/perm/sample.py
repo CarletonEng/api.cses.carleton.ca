@@ -25,32 +25,18 @@
 ################################################################################
 
 import api.db as db
+from api.perm import Perm
+from api.person import Person
 
-class Perm(db.Base):
-	""" A permission.
-		
-		Permissions are identified by their `name`.
-		
-		Current permissions are as follows:
-		- selfr: Can read sensitive information about themselves.
-		- selfw: Can change their sensitive information.
-		- personr: Can read anyone's sensitive information.
-		- personw: Can change anyone's sensitive information.
-	"""
-	__tablename__ = 'perm'
-	
-	__id     = db.Column(db.Integer, primary_key=True)
-	name     = db.Column(db.String)
-	__userid = db.Column(db.Hex, db.ForeignKey("person.id"))
-	
-	def __init__(self, name):
-		self.name = name
-	
-	def __eq__(self, that):
-		if instanceof(that, Perm):
-			return this.name == that.name
-		else:
-			return this.name == that
-	
-	def __repr__(self):
-		return "Perm({}, {})".format(self.name, repr(self.user))
+sess = db.Session()
+
+def permadd(uid, perms):
+	p = sess.query(Person).get(uid)
+	p.perms.extend([Perm(s) for s in perms])
+	return p
+
+permadd("1", ["selfr","selfw","personr","personw"])
+permadd("2", ["selfr","selfw"])
+permadd("3", ["selfr","selfw"])
+
+sess.commit()

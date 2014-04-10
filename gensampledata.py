@@ -36,4 +36,5 @@ api.app.debug = True
 db.Base.metadata.create_all(db.engine)
 
 import api.person.sample
+import api.perm.sample
 import api.auth.sample
