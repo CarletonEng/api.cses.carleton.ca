@@ -137,6 +137,3 @@ class index(framework.Handler):
 import api.person.api
 import api.auth.api
 import api.perm.api
-
-if __name__ == "__main__":
-	app.devserver()
