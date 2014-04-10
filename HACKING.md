@@ -9,7 +9,7 @@ Both of these libraries can be installed via `easy_install` once you have python
 
 	easy_install werkzeug sqlalchemy
 
-Once you have those set up you should be able to run `python main.py` and the
+Once you have those set up you should be able to run `python3 main.py` and the
 API should start on http://localhost:8080.  Typing that in your URL bar should
 show you a message.
 
