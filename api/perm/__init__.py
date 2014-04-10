@@ -30,6 +30,12 @@ class Perm(db.Base):
 	""" A permission.
 		
 		Permissions are identified by their `name`.
+		
+		Current permissions are as follows:
+		- selfr: Can read sensitive information about themselves.
+		- selfw: Can change their sensitive information.
+		- personr: Can read anyone's sensitive information.
+		- personw: Can change anyone's sensitive information.
 	"""
 	__tablename__ = 'perm'
 	
