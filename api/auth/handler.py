@@ -57,7 +57,7 @@ class index(api.Handler):
 			self.status_code = 400
 			return {"e":400, "msg":"No password provided."}
 		
-		p = s.query(Person).filter(Person.id == j["user"]).first()
+		p = s.query(Person).get(j["user"])
 		if not p or not p.password_check(j["pass"]):
 			self.status_code = 403
 			return {"e":403, "msg":"Invalid credentials."}
