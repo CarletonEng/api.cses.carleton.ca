@@ -71,3 +71,14 @@ class index(api.Handler):
 			"perms": a.perms,
 			"user": a.user.id,
 		}
+
+@api.app.route("/auth/invalidate")
+class index(api.Handler):
+	@api.dbs
+	@api.auth.authrequired
+	@api.json_out
+	def POST(self):
+		self.dbs.delete(self.req.auth)
+		self.dbs.commit()
+		
+		return {"e":0}
