@@ -104,6 +104,21 @@ class Auth(db.Base):
 		"""
 		return self.id+"$"+self.password
 	
+	def neverusethisinsecuremethod_set(self, id, pw):
+		""" Set the username and password.
+			This function should *NEVEREVEREVEREVEREVER* be used in production.
+			You should always use the securely random values created in the
+			constructor `Auth(user)`.  This function is *only* useful for
+			creating repeatable test data for development.
+		"""
+		#@TODO: This check.
+		#if not api.app.debug:
+		#	raise Error("Someone called this in production code.")
+		
+		self.id       = id
+		self.password = pw
+		self.__pass   = crypt(pw)
+	
 	@property
 	def expired(self):
 		""" Check if the auth has expired. """
