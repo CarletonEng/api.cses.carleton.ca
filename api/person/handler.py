@@ -84,12 +84,17 @@ class person(api.Handler):
 			requser == p and "selfr" in requser.perms
 		))
 		
-		return {"e":0,
+		r = {"e":0,
 			"id":       p.id,
 			"name":     p.name,
 			"namefull": p.namefull,
-			"perms":    p.perms if all else None,
 		}
+		if all:
+			r.update({
+				"perms": p.perms,
+			})
+		
+		return r
 	
 	@fetchuser
 	@auth

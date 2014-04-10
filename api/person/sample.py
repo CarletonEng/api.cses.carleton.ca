@@ -33,6 +33,7 @@ def person(name, full, pw, perms):
 	p = Person()
 	p.name = name
 	p.namefull = full
+	p.perms = perms
 	p.password_set(pw)
 	sess.add(p)
 	return p
