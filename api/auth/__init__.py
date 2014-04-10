@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 from crypt import crypt
 from hmac import compare_digest
 
+import api
 import api.db as db
 
 srand = random.SystemRandom()
@@ -111,9 +112,8 @@ class Auth(db.Base):
 			constructor `Auth(user)`.  This function is *only* useful for
 			creating repeatable test data for development.
 		"""
-		#@TODO: This check.
-		#if not api.app.debug:
-		#	raise Error("Someone called this in production code.")
+		if not api.app.debug:
+			raise Exception("Someone called this in production code.")
 		
 		self.id       = id
 		self.password = pw

@@ -29,7 +29,10 @@ import os
 try: os.remove("csesapi.sqlite")
 except: pass
 
+import api
 import api.db as db
+
+api.app.debug = True
 db.Base.metadata.create_all(db.engine)
 
 import api.person.sample
