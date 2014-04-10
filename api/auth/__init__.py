@@ -147,3 +147,18 @@ def auth(f):
 		
 		return f(self, *args)
 	return w
+
+def authrequired(f):
+	""" A wrapper to check for an auth.
+		
+		This parses the auth out of the request and ensures that one exists.
+		If one does not exist it returns a 401 with a json response.
+	"""
+	@auth
+	def w(self, *args):
+		if not self.req.auth:
+			self.status_code = 401
+			return '{"e":"401","msg":"Authorization required."}'
+		
+		return f(self, *args)
+	return w
