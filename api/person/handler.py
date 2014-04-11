@@ -37,13 +37,13 @@ def fetchuser(f):
 			int(id, 16)
 		except:
 			self.status_code = 400
-			self.data = '{"e":400, "msg": "id must be a hex string."}\n'
+			self.data = '{"e":1, "msg": "id must be a hex string."}\n'
 			return
 		
 		p = self.dbs.query(Person).filter(Person.id == id).first()
 		if not p:
 			self.status_code = 404
-			self.data = '{"e":404, "msg": "Person does not exist."}\n'
+			self.data = '{"e":1, "msg": "Person does not exist."}\n'
 			return
 		
 		return f(self, p)
@@ -58,7 +58,8 @@ class index(api.Handler):
 		j = self.req.json
 		
 		if "personw" not in self.req.auth.user.perms:
-			return {"e":403,"msg":"You don't have permission to do that."}
+			self.status_code = 403
+			return {"e":1,"msg":"You don't have permission to do that."}
 		
 		p = Person()
 		self.dbs.add(p)
@@ -68,7 +69,7 @@ class index(api.Handler):
 		
 		self.dbs.commit()
 		
-		return {"e": 0,
+		return {"e":0,
 			"id": p.id,
 		}
 

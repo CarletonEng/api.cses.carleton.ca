@@ -114,14 +114,14 @@ def json_io(f):
 	def w(self, *args):
 		if self.req.mimetype != "application/json":
 			self.status_code = 400
-			self.data = '{"e":400,"msg":"Content-Type must be application/json."}\n'
+			self.data = '{"e":1,"msg":"Content-Type must be application/json."}\n'
 			return
 		
 		try:
 			self.req.json = json.loads(self.req.get_data(as_text=True))
 		except:
 			self.status_code = 400
-			self.data = '{"e":400,"msg":"JSON request body required."}\n'
+			self.data = '{"e":1,"msg":"JSON request body required."}\n'
 			return
 		
 		r = f(self, *args)

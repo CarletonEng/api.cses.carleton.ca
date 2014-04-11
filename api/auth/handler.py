@@ -36,7 +36,7 @@ class index(api.Handler):
 	@api.auth.authrequired
 	@api.json_out
 	def GET(self):
-		return {"e": 0,
+		return {"e":0,
 			"perms": self.req.auth.perms,
 			"user": self.req.auth.user.id,
 		}
@@ -49,15 +49,15 @@ class index(api.Handler):
 		
 		if not "user" in j:
 			self.status_code = 400
-			return {"e":400, "msg":"No user provided."}
+			return {"e":1, "msg":"No user provided."}
 		if not "pass" in j:
 			self.status_code = 400
-			return {"e":400, "msg":"No password provided."}
+			return {"e":1, "msg":"No password provided."}
 		
 		p = s.query(Person).get(j["user"])
 		if not p or not p.password_check(j["pass"]):
 			self.status_code = 403
-			return {"e":403, "msg":"Invalid credentials."}
+			return {"e":1, "msg":"Invalid credentials."}
 		
 		a = Auth(p)
 		s.add(a)
@@ -66,7 +66,7 @@ class index(api.Handler):
 		
 		s.commit()
 		
-		return {"e": 0,
+		return {"e":0,
 			"token": a.token,
 			"perms": a.perms,
 			"user": a.user.id,
