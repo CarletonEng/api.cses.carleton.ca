@@ -158,7 +158,11 @@ def authrequired(f):
 	def w(self, *args):
 		if not self.req.auth:
 			self.status_code = 401
-			return '{"e":"401","msg":"Authorization required."}'
+			if "localhost" in self.req.host:
+				self.headers["WWW-Authenticate"] = 'Bearer realm="http://localhost:1234/login"'
+			else:
+				self.headers["WWW-Authenticate"] = 'Bearer realm="http://cses.carleton.ca/login"'
+			return '{"e":1,"msg":"Authorization required."}'
 		
 		return f(self, *args)
 	return w
