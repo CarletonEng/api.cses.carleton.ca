@@ -142,7 +142,7 @@ def auth(f):
 		ah = self.req.headers.get("Authorization")
 		if ah:
 			method, _, token = ah.partition(" ")
-			if method == "token":
+			if method == "Bearer":
 				self.req.auth = Auth.fromtoken(self.dbs, token)
 		
 		return f(self, *args)
