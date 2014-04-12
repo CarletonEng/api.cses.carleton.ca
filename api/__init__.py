@@ -131,7 +131,7 @@ def json_io(f):
 @app.route("/")
 class index(framework.Handler):
 	def GET(self):
-		self.headers["Cache-Control"] = "public, max-age=31536000"
+		self.headers["Cache-Control"] = "max-age=31536000,stale-while-revalidate=31536000"
 		self.data = "This is the API, go away.\n"
 
 import api.person.handler
