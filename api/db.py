@@ -86,8 +86,12 @@ class HexLong(TypeDecorator):
 class JSON(TypeDecorator):
 	impl = String
 	
+	def __init__(self, *args, sort=False, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.__sort = sort
+	
 	def process_bind_param(self, value, dialect):
-		return json.dumps(value)
+		return json.dumps(value, separators=(",", ":"), sort_keys=self.__sort)
 	
 	def process_result_value(self, value, dialect):
 		return value and json.loads(value)
