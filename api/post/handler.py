@@ -63,7 +63,7 @@ class person(api.Handler):
 		
 		return {"e":0,
 			"id":      p.id,
-			"slug":    p.slug,
+			"type":    p.type,
 			"title":   p.title,
 			"content": p.content,
 		}
