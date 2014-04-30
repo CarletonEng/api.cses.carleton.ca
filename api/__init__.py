@@ -137,3 +137,4 @@ class index(framework.Handler):
 import api.person.handler
 import api.auth.handler
 import api.csp.handler
+import api.post.handler

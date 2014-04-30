@@ -24,17 +24,46 @@
 #                                                                              #
 ################################################################################
 
-import os
-
-try: os.remove("csesapi.sqlite")
-except: pass
-
 import api
 import api.db as db
+from api.auth import auth
+from api.post import Post
 
-api.app.debug = True
-db.Base.metadata.create_all(db.engine)
+def fetchpost(f):
+	""" Converts first argument to Post from id."""
+	@api.dbs
+	def w(self, id):
+		try:
+			int(id, 16)
+		except:
+			self.status_code = 400
+			self.data = '{"e":1, "msg": "id must be a hex string."}\n'
+			return
+		
+		p = self.dbs.query(Post).get(id)
+		if not p:
+			self.status_code = 404
+			self.data = '{"e":1, "msg": "Post does not exist."}\n'
+			return
+		
+		return f(self, p)
+	return w
 
-import api.person.sample
-import api.auth.sample
-import api.post.sample
+@api.app.route("/post")
+class index(api.Handler):
+	pass
+
+@api.app.route("/post/([^/]*)")
+class person(api.Handler):
+	@fetchpost
+	@auth
+	@api.json_out
+	def GET(self, p):
+		print(p)
+		
+		return {"e":0,
+			"id":      p.id,
+			"slug":    p.slug,
+			"title":   p.title,
+			"content": p.content,
+		}

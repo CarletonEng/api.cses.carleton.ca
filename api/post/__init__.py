@@ -24,17 +24,29 @@
 #                                                                              #
 ################################################################################
 
-import os
-
-try: os.remove("csesapi.sqlite")
-except: pass
-
-import api
 import api.db as db
 
-api.app.debug = True
-db.Base.metadata.create_all(db.engine)
-
-import api.person.sample
-import api.auth.sample
-import api.post.sample
+class Post(db.Base):
+	""" A post.
+		
+		Instance Attributes:
+			id:
+				A string containing a unique hex ID representing the user.
+			name:
+				A string containing the users name.
+			auths:
+				A list of Auth objects that apply to the user.
+			perms:
+				A list of strings representing the permissions the user has.
+	"""
+	
+	__tablename__ = 'posts'
+	
+	id       = db.Column(db.Hex, primary_key=True)
+	slug     = db.Column(db.String)
+	title   = db.Column(db.String)
+	content  = db.Column(db.JSON, default=lambda:[]);
+	perm    = db.Column(db.JSON, default=None)
+	
+	def __repr__(self):
+		return "Post({}, {})".format(self.id, self.slug)

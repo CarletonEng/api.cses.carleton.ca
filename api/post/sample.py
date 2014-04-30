@@ -24,17 +24,21 @@
 #                                                                              #
 ################################################################################
 
-import os
-
-try: os.remove("csesapi.sqlite")
-except: pass
-
-import api
 import api.db as db
+from api.person import Person
+from api.post import Post
 
-api.app.debug = True
-db.Base.metadata.create_all(db.engine)
+sess = db.Session()
 
-import api.person.sample
-import api.auth.sample
-import api.post.sample
+def post(slug, title, content):
+	p = Post()
+	sess.add(p)
+	p.slug = slug
+	p.title = title
+	p.content = content
+	return p
+
+post("hello-world", "Hello, World!", "<p>This is a post!</p>");
+post("first-post", "I am awesome", "<p>f1rs+ p0$t n00b5</p>");
+
+sess.commit()
