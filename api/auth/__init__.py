@@ -136,6 +136,8 @@ def auth(f):
 		This parses the Authorization header and if an auth token is provided
 		converts it into an Auth.  `self.req.auth` is set to this token if valid
 		otherwise it is set to None.
+		
+		A self.dbs object that is a database session is required.
 	"""
 	def w(self, *args):
 		self.req.auth = None
