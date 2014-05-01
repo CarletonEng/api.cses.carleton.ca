@@ -30,14 +30,21 @@ from api.post import Post
 
 sess = db.Session()
 
-def post(slug, title, content):
+def post(id, title, content, type=None):
 	p = Post()
 	sess.add(p)
-	p.slug = slug
+	p.id = id
 	p.title = title
 	p.content = content
+	if type:
+		p.type = type
 	return p
 
+post("index", "Home", """
+<p>Welcome to the new CSES site!</p>
+<a href="/people">people</a>
+<a href="/login">login</a>
+""", type="page")
 post("hello-world", "Hello, World!", "<p>This is a post!</p>");
 post("first-post", "I am awesome", "<p>f1rs+ p0$t n00b5</p>");
 
