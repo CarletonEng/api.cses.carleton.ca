@@ -52,4 +52,4 @@ class Post(db.Base):
 	perms   = db.Column(db.JSON, default=None)
 	
 	def __repr__(self):
-		return "Post({}, {})".format(self.id, self.slug)
+		return "Post({}, {})".format(self.id, self.type)

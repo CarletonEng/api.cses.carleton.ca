@@ -33,13 +33,6 @@ def fetchpost(f):
 	""" Converts first argument to Post from id."""
 	@api.dbs
 	def w(self, id):
-		try:
-			int(id, 16)
-		except:
-			self.status_code = 400
-			self.data = '{"e":1, "msg": "id must be a hex string."}\n'
-			return
-		
 		p = self.dbs.query(Post).get(id)
 		if not p:
 			self.status_code = 404
