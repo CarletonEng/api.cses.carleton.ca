@@ -40,12 +40,9 @@ class index(api.Handler):
 		if not j:
 			return
 		
-		print(j)
 		r = self.dbs.query(CSPReport).filter_by(data=j).scalar()
-		print(1, r)
 		if not r:
 			r = CSPReport(j)
-			print(2,r)
 			self.dbs.add(r)
 		
 		self.dbs.add(CSPViolation(r,
