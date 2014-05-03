@@ -32,7 +32,7 @@ import api.db as db
 
 app = framework.App()
 
-originre = re.compile("https?://(cses.carleton.ca|localhost)(:[0-9]+)?$")
+originre = re.compile("https?://(cses\.(carleton\.ca|kevincox\.ca)|localhost)(:[0-9]+)?$")
 
 class Handler(framework.Handler):
 	""" A handler for the API.
