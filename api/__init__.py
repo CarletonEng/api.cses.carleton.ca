@@ -32,6 +32,7 @@ import api.db as db
 
 app = framework.App()
 
+#@TODO: Change the options http to https only.
 originre = re.compile("https?://(cses\.(carleton\.ca|kevincox\.ca)|localhost)(:[0-9]+)?$")
 
 class Handler(framework.Handler):
