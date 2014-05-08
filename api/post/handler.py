@@ -52,7 +52,10 @@ class person(api.Handler):
 	@auth
 	@api.json_out
 	def GET(self, p):
-		print(p)
+		if "localhost" not in self.req.host:
+			# Cache for a day unless the dev server.
+			# ...or 3 on error.
+			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
 		
 		return {"e":0,
 			"id":      p.id,
