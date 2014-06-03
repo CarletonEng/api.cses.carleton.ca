@@ -26,11 +26,13 @@
 
 import re
 import json
+import os.path
 
 import api.framework
 import api.db as db
 
 app = framework.App()
+app.config.blobs = os.path.realpath(__file__+"../../blobs")+"/"
 
 #@TODO: Change the options http to https only.
 originre = re.compile("https?://(cses\.(carleton\.ca|kevincox\.ca)|localhost)(:[0-9]+)?$")

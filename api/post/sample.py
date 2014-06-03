@@ -40,7 +40,9 @@ def post(id, title, content, type=None):
 		p.type = type
 	return p
 
-post("hello-world", "Hello, World!", "<p>This is a post!</p>");
-post("first-post", "I am awesome", "<p>f1rs+ p0$t n00b5</p>");
+post("hello-world", "Hello, World!", "<p>This is a post!</p>")
+post("first-post", "I am awesome", "<p>f1rs+ p0$t n00b5</p>")
+post("irontimes/", "Iron Times", "homepage")
+post("irontimes/authors", "Iron Times Authors", "<ul><li>someone</li><li>someone else</li></ul>")
 
 sess.commit()

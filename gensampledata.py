@@ -26,7 +26,7 @@
 
 import os
 
-try: os.remove("csesapi.sqlite")
+try:    os.remove("csesapi.sqlite")
 except: pass
 
 import api

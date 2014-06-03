@@ -126,6 +126,7 @@ class App:
 		self.debug = debug
 		self.__routes = []
 		self.catchall = DefaultRoute
+		self.config = lambda:None
 	
 	def route(self, regex):
 		""" A route decorator.

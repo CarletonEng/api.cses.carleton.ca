@@ -45,11 +45,25 @@ class Post(db.Base):
 	
 	__tablename__ = 'posts'
 	
-	id      = db.Column(db.String, primary_key=True)
+	__id    = db.Column(db.String, primary_key=True)
+	__dir   = db.Column(db.String, index=True)
 	type    = db.Column(db.String, default=lambda:"article")
 	title   = db.Column(db.String)
 	content = db.Column(db.JSON, default=lambda:[]);
 	perms   = db.Column(db.JSON, default=None)
+	
+	@db.hybrid_property
+	def id(self):
+		return self.__id
+	
+	@id.setter
+	def id(self, v):
+		self.__id  = v
+		self.__dir, _, _ = v.rpartition("/")
+	
+	@db.hybrid_property
+	def directory(self):
+		return self.__dir
 	
 	def __repr__(self):
 		return "Post({}, {})".format(self.id, self.type)
