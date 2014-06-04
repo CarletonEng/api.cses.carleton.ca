@@ -47,7 +47,7 @@ class Post(db.Base):
 	
 	__id    = db.Column(db.String, primary_key=True)
 	__dir   = db.Column(db.String, index=True)
-	type    = db.Column(db.String, default=lambda:"article")
+	type    = db.Column(db.String, default=lambda:"page")
 	title   = db.Column(db.String)
 	content = db.Column(db.JSON, default=lambda:[]);
 	perms   = db.Column(db.JSON, default=None)
