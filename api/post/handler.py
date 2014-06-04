@@ -24,6 +24,8 @@
 #                                                                              #
 ################################################################################
 
+from urllib.parse import parse_qs
+
 import api
 import api.db as db
 from api.auth import auth
@@ -44,9 +46,23 @@ def fetchpost(f):
 
 @api.app.route("/post")
 class index(api.Handler):
-	pass
+	@api.dbs
+	@auth
+	@api.json_out
+	def GET(self):
+		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
+		print("uq", uq)
+		
+		dbq = self.dbs.query(Post.id, Post.title)
+		
+		if "dir" in uq:
+			dbq = dbq.filter(Post.directory == uq["dir"][-1].rstrip("/"))
+		
+		return {"e":0,
+			"posts": [{"id":id, "title": title} for id, title in dbq],
+		}
 
-@api.app.route("/post/([^/]*)")
+@api.app.route("/post/(.*)")
 class person(api.Handler):
 	@fetchpost
 	@auth

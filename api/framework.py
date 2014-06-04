@@ -56,7 +56,6 @@ class Handler(werkzeug.wrappers.Response):
 			This sets up the class variables and then calls the handler
 			functions.
 		"""
-		print("Response started", datetime.now())
 		super().__init__()
 		
 		self.app = app
@@ -66,8 +65,6 @@ class Handler(werkzeug.wrappers.Response):
 		f = getattr(self, self.req.method.upper(), self.default)
 		r = f(*args)
 		self.after(r)
-		
-		print("Response complete", datetime.now())
 	
 	def before(self):
 		""" Setup
@@ -142,7 +139,6 @@ class App:
 		return decorator
 	
 	def __call__(self, environ, start_response):
-		print("Response begin", datetime.now())
 		req = werkzeug.wrappers.Request(environ)
 		responder = self.catchall
 		args = []

@@ -68,6 +68,9 @@ def dbs(f):
 		The session will be available in `self.dbs`.
 	"""
 	def w(self, *args):
+		if hasattr(self, "dbs"):
+			return f(self, *args)
+		
 		self.dbs = None
 		try:
 			self.dbs = db.Session()

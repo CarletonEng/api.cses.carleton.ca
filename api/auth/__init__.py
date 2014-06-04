@@ -139,6 +139,7 @@ def auth(f):
 		
 		A self.dbs object that is a database session is required.
 	"""
+	@api.dbs
 	def w(self, *args):
 		self.req.auth = None
 		ah = self.req.headers.get("Authorization")
