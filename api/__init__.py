@@ -32,7 +32,7 @@ import api.framework
 import api.db as db
 
 app = framework.App()
-app.config.blobs = os.path.realpath(__file__+"../../blobs")+"/"
+app.config.datapath = os.path.realpath(__file__+"../../cses-data")+"/"
 
 #@TODO: Change the options http to https only.
 originre = re.compile("https?://(cses\.(carleton\.ca|kevincox\.ca)|localhost)(:[0-9]+)?$")
@@ -139,6 +139,15 @@ class index(framework.Handler):
 	def GET(self):
 		self.headers["Cache-Control"] = "max-age=31536000,stale-while-revalidate=31536000"
 		self.data = "This is the API, go away.\n"
+
+class Default(Handler):
+	@json_out
+	def default(self):
+		self.status_code = 404
+		return {"e": 404,
+			"msg": "The requested URL {} is not part of the API.".format(self.req.path),
+		}
+app.catchall = Default
 
 import api.person.handler
 import api.auth.handler
