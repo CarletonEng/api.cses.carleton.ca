@@ -25,7 +25,7 @@
 ################################################################################
 
 import api
-import api.db as db
+from api import db
 
 from api.person import Person
 from api.auth import Auth

@@ -24,7 +24,7 @@
 #                                                                              #
 ################################################################################
 
-import api.db as db
+from api import db
 
 class Post(db.Base):
 	""" A post.

@@ -24,17 +24,18 @@
 #                                                                              #
 ################################################################################
 
-import os
+import os, shutil
 
-try:    os.remove("csesapi.sqlite")
-except: pass
+os.environ["CSESAPI_DEBUG"] = "TRUE"
 
 import api
-import api.db as db
+from api import app, db
 
-api.app.debug = True
-db.Base.metadata.create_all(db.engine)
+shutil.rmtree(app.config.datapath, ignore_errors=True)
+app.create()
 
 import api.person.sample
+
 import api.auth.sample
+import api.blob.sample
 import api.post.sample

@@ -28,11 +28,24 @@ import re
 import json
 import os.path
 
-import api.framework
-import api.db as db
+from api import framework
+from api.config import Config
 
-app = framework.App()
-app.config.datapath = os.path.realpath(__file__+"../../cses-data")+"/"
+class CSESAPI(framework.App):
+	""" Our App.
+		
+		(And yes the name is camel case)
+	"""
+	def __init__(self):
+		super().__init__()
+		
+		self.config = Config()
+	
+	def create(self):
+		os.makedirs(self.config.datapath, 0o755, exist_ok=True)
+		db.Base.metadata.create_all(db.engine)
+
+app = CSESAPI()
 
 #@TODO: Change the options http to https only.
 originre = re.compile("https?://(cses\.(carleton\.ca|kevincox\.ca)|localhost)(:[0-9]+)?$")
@@ -57,6 +70,8 @@ class Handler(framework.Handler):
 	
 	def OPTIONS(self, *args):
 		pass
+
+from api import db
 
 def dbs(f):
 	""" Use a database session for a handler.
@@ -106,6 +121,7 @@ def json_out(f):
 	"""
 	def w(self, *args):
 		r = f(self, *args)
+		self.content_type = "application/json; charset=utf-8"
 		self.data = json.dumps(r)+"\n"
 	return w
 
@@ -131,6 +147,7 @@ def json_io(f):
 			return
 		
 		r = f(self, *args)
+		self.content_type = "application/json; charset=utf-8"
 		self.data = json.dumps(r)+"\n"
 	return w
 
@@ -138,6 +155,7 @@ def json_io(f):
 class index(framework.Handler):
 	def GET(self):
 		self.headers["Cache-Control"] = "max-age=31536000,stale-while-revalidate=31536000"
+		self.content_type = "text/plain; charset=utf-8"
 		self.data = "This is the API, go away.\n"
 
 class Default(Handler):
@@ -149,7 +167,9 @@ class Default(Handler):
 		}
 app.catchall = Default
 
-import api.person.handler
 import api.auth.handler
+
+import api.blob.handler
 import api.csp.handler
+import api.person.handler
 import api.post.handler

@@ -24,90 +24,20 @@
 #                                                                              #
 ################################################################################
 
-import api
-from api import db
-from api.person import Person
-from api.auth import Auth, auth, authrequired
+from os import path, environ as env
+import os.path
 
-def fetchuser(f):
-	""" Converts first argument to Person from id."""
-	@api.dbs
-	def w(self, id):
-		try:
-			int(id, 16)
-		except:
-			self.status_code = 400
-			self.content_type = "application/json; charset=utf-8"
-			self.data = '{"e":1, "msg": "id must be a hex string."}\n'
-			return
-		
-		p = self.dbs.query(Person).filter(Person.id == id).first()
-		if not p:
-			self.status_code = 404
-			self.data = '{"e":1, "msg": "Person does not exist."}\n'
-			return
-		
-		return f(self, p)
-	return w
+# The root of the code repository.
+root = os.path.realpath(__file__+"/../../")+"/"
 
-@api.app.route("/person")
-class index(api.Handler):
-	@authrequired
-	@api.json_io
-	@api.dbs
-	def PUT(self):
-		j = self.req.json
+class Config:
+	def __init__(s):
+		s.debug    = bool(env.get("CSESAPI_DEBUG", False))
 		
-		if "personw" not in self.req.auth.user.perms:
-			self.status_code = 403
-			return {"e":1,"msg":"You don't have permission to do that."}
-		
-		p = Person()
-		self.dbs.add(p)
-		
-		if "name" in j:
-			p.name = j["name"]
-		
-		self.dbs.commit()
-		
-		return {"e":0,
-			"id": p.id,
-		}
-
-@api.app.route("/person/([^/]*)")
-class person(api.Handler):
-	@fetchuser
-	@auth
-	@api.json_out
-	def GET(self, p):
-		requser = self.req.auth and self.req.auth.user
-		all = ( requser and (
-			"personr" in requser.perms or
-			requser == p and "selfr" in requser.perms
-		))
-		
-		r = {"e":0,
-			"id":       p.id,
-			"name":     p.name,
-			"namefull": p.namefull,
-		}
-		if all:
-			r.update({
-				"perms": p.perms,
-			})
-		
-		return r
+		s.datapath = env.get("CSESAPI_DATADIR", root+"cses-data/")
+		s.database = env.get("CSESAPI_DB",      "sqlite:///"+s.datapath+"cses.sqlite")
 	
-	@fetchuser
-	@auth
-	@api.json_io
-	def PUT(self, p):
-		j = self.req.json
-		
-		if "name" in j:
-			p.name = j["name"]
-		if "namefull" in j:
-			p.namefull = j["namefull"]
-		
-		self.dbs.commit()
-		return {"e":0}
+	def __repr__(self):
+		r = ["Config(", ")"]
+		r[1:1] = ",\n       ".join(k+"="+repr(v) for k,v in self.__dict__.items())
+		return "".join(r)

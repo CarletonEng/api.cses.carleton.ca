@@ -27,7 +27,7 @@
 from crypt import crypt
 from hmac import compare_digest
 
-import api.db as db
+from api import db
 
 class Person(db.Base):
 	""" A person.

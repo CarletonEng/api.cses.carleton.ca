@@ -27,7 +27,7 @@
 from urllib.parse import parse_qs
 
 import api
-import api.db as db
+from api import db
 from api.auth import auth
 from api.post import Post
 
@@ -38,6 +38,7 @@ def fetchpost(f):
 		p = self.dbs.query(Post).get(id)
 		if not p:
 			self.status_code = 404
+			self.content_type = "application/json; charset=utf-8"
 			self.data = '{"e":1, "msg": "Post does not exist."}\n'
 			return
 		

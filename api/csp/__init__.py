@@ -26,7 +26,7 @@
 
 from datetime import datetime
 
-import api.db as db
+from api import db
 
 class CSPViolation(db.Base):
 	""" A CSP violation.

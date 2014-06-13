@@ -25,7 +25,7 @@
 ################################################################################
 
 import api
-import api.db as db
+from api import db
 from api.csp import CSPViolation, CSPReport
 
 @api.app.route("/csp")
@@ -50,3 +50,6 @@ class index(api.Handler):
 		                          self.req.remote_addr))
 		
 		self.dbs.commit()
+		
+		self.content_type = "text/pain; charset=utf-8"
+		self.data = "OK"

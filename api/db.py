@@ -31,11 +31,14 @@ from binascii import hexlify, unhexlify
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, BINARY, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.ext.hybrid import hybrid_property
 
-engine  = sqlalchemy.create_engine("sqlite:///csesapi.sqlite", echo=True)
+import api
+from api import app
+
+engine  = sqlalchemy.create_engine(app.config.database, echo=app.config.debug)
 Base    = declarative_base()
 Session = sessionmaker(bind=engine)
 

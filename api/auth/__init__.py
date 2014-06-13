@@ -30,7 +30,7 @@ from crypt import crypt
 from hmac import compare_digest
 
 import api
-import api.db as db
+from api import db
 
 srand = random.SystemRandom()
 
@@ -112,7 +112,7 @@ class Auth(db.Base):
 			constructor `Auth(user)`.  This function is *only* useful for
 			creating repeatable test data for development.
 		"""
-		if not api.app.debug:
+		if not api.app.config.debug:
 			raise Exception("Someone called this in production code.")
 		
 		self.id       = id

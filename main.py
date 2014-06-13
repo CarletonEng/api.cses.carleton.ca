@@ -24,8 +24,13 @@
 #                                                                              #
 ################################################################################
 
-import api.db
+# This script starts a development server.
 
-api.db.Base.metadata.create_all(api.db.engine)
+import os
 
-api.app.devserver()
+os.environ["CSESAPI_DEBUG"] = "TRUE"
+
+from api import app
+
+app.create()
+app.devserver()

@@ -28,6 +28,7 @@ import re
 from datetime import datetime
 
 import werkzeug.wrappers
+import webob
 
 class Handler(werkzeug.wrappers.Response):
 	""" A framework for handling requests.
@@ -94,6 +95,7 @@ class Handler(werkzeug.wrappers.Response):
 			It is not required to call super in this method.
 		"""
 		self.status_code = 405
+		self.content_type = "text/plain; charset=utf-8"
 		self.data = "Method {} not allowed.\n".format(self.req.method)
 
 class DefaultRoute(Handler):
@@ -103,6 +105,7 @@ class DefaultRoute(Handler):
 	"""
 	def default(self):
 		self.status_code = 404
+		self.content_type = "text/plain; charset=utf-8"
 		self.data = "Requested URL '{}' does not exist.\n".format(self.req.path)
 
 class App:
@@ -119,8 +122,7 @@ class App:
 		The handler must return a WSGI application that will be used to satisfy
 		the request.
 	"""
-	def __init__(self, debug=False):
-		self.debug = debug
+	def __init__(self):
 		self.__routes = []
 		self.catchall = DefaultRoute
 		self.config = lambda:None
@@ -139,7 +141,7 @@ class App:
 		return decorator
 	
 	def __call__(self, environ, start_response):
-		req = werkzeug.wrappers.Request(environ)
+		req = webob.Request(environ)
 		responder = self.catchall
 		args = []
 		
