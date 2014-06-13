@@ -45,8 +45,8 @@ class Post(db.Base):
 	
 	__tablename__ = 'posts'
 	
-	__id    = db.Column(db.String, primary_key=True)
-	__dir   = db.Column(db.String, index=True)
+	__id    = db.Column("id", db.String, primary_key=True)
+	__dir   = db.Column("dir", db.String, index=True)
 	type    = db.Column(db.String, default=lambda:"page")
 	title   = db.Column(db.String)
 	content = db.Column(db.JSON, default=lambda:[]);

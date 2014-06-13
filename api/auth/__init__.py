@@ -61,11 +61,11 @@ class Auth(db.Base):
 	__tablename__ = 'auth'
 	AGE_MAX = timedelta(weeks=2)
 	
-	id       = db.Column(db.HexLong, primary_key=True)
-	__pass   = db.Column(db.String)
-	__ctime  = db.Column(db.DateTime, default=lambda: datetime.utcnow())
-	__userid = db.Column(db.Hex, db.ForeignKey("person.id"))
-	perms    = db.Column(db.JSON);
+	id       = db.Column("id", db.HexLong, primary_key=True)
+	__pass   = db.Column("pass", db.String)
+	__ctime  = db.Column("ctime", db.DateTime, default=lambda: datetime.utcnow())
+	__userid = db.Column("userid", db.Hex, db.ForeignKey("person.id"))
+	perms    = db.Column("perms", db.JSON);
 	
 	@staticmethod
 	def fromtoken(dbs, tok):

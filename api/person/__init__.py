@@ -48,7 +48,7 @@ class Person(db.Base):
 	id       = db.Column(db.Hex, primary_key=True)
 	name     = db.Column(db.String)
 	namefull = db.Column(db.String)
-	__pw     = db.Column(db.String, server_default="!")
+	__pw     = db.Column("pw", db.String, server_default="!")
 	perms    = db.Column(db.JSON, default=lambda:[]);
 	
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
