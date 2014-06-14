@@ -141,7 +141,7 @@ class App:
 		return decorator
 	
 	def __call__(self, environ, start_response):
-		req = webob.Request(environ)
+		req = werkzeug.Request(environ)
 		responder = self.catchall
 		args = []
 		
