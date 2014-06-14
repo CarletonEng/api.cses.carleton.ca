@@ -39,6 +39,9 @@ class index(api.Handler):
 	@auth
 	@api.json_out
 	def POST(self):
+		if not "upload" in self.req.auth.perms:
+			return {"e":1, "msg": "You can't upload."}
+		
 		pass
 
 @api.app.route("/blob/(.*)")

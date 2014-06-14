@@ -58,7 +58,7 @@ class index(api.Handler):
 	def PUT(self):
 		j = self.req.json
 		
-		if "personw" not in self.req.auth.user.perms:
+		if "personw" not in self.req.auth.perms:
 			self.status_code = 403
 			return {"e":1,"msg":"You don't have permission to do that."}
 		
@@ -80,10 +80,9 @@ class person(api.Handler):
 	@auth
 	@api.json_out
 	def GET(self, p):
-		requser = self.req.auth and self.req.auth.user
-		all = ( requser and (
-			"personr" in requser.perms or
-			requser == p and "selfr" in requser.perms
+		all = ( self.req.auth and (
+			"personr" in self.req.auth.perms or
+			self.req.auth.user == p and "selfr" in self.req.auth.perms
 		))
 		
 		r = {"e":0,
