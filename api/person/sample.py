@@ -38,7 +38,7 @@ def person(name, full, pw, perms):
 	sess.add(p)
 	return p
 
-person("Kevin", "Kevin Cox", "passwd", ["selfw","selfr","personr","personw"])
+person("Kevin", "Kevin Cox", "passwd", ["selfw","selfr","personr","personw","upload"])
 person("Jane", "Jane Smith", "enaj", ["selfr","selfw"])
 person("John", "John Doe", "password1", ["selfr","selfw"])
 person("Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])

@@ -30,28 +30,66 @@ from werkzeug.wsgi import wrap_file
 
 import api
 from api import db
-from api.auth import auth
+from api.auth import auth, authrequired
 from api.blob import Blob
 
 @api.app.route("/blob")
 class index(api.Handler):
 	@api.dbs
-	@auth
+	@authrequired
 	@api.json_out
-	def POST(self):
+	def PUT(self):
 		if not "upload" in self.req.auth.perms:
+			# The client doesn't actually get this for larger because the
+			# connection gets aborted when we don't accept their upload.
+			
+			self.status_code = 403
 			return {"e":1, "msg": "You can't upload."}
 		
-		pass
+		def chunked(s):
+			chunksize = 4*1024*1024
+			d = s.read(chunksize)
+			while d:
+				yield d
+				d = s.read(chunksize)
+		
+		b = Blob(mime=self.req.mimetype)
+		b.write(chunked(self.req.stream))
+		
+		new = True
+		sb = self.dbs.query(Blob).get(b.id)
+		if sb: # We already have this blob.
+			b = sb
+			new = False
+		else: # Save the new one.
+			self.dbs.add(b)
+			self.dbs.commit()
+		
+		self.status_code = 201 if new else 200
+		self.headers["Location"] = "/blob/"+b.id
+		
+		return {"e": 0,
+			"id": b.id,
+			"new": new,
+		}
 
-@api.app.route("/blob/(.*)")
+@api.app.route("/blob/([^/?#]*).*")
 def blob(app, req, id):
+	id = id.upper()
+	
 	def wsgi(env, start_response):
+		# Handle ETags.
+		if env.get("HTTP_IF_NONE_MATCH", "") == '"'+id+'"':
+			start_response("304 NOT MODIFIED", [
+				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
+			])
+			return ()
+		
 		sess = db.Session()
 		try:
 			b = sess.query(Blob).get(id)
 			if not b:
-				r = b'{"e":1, "msg": "Blob does not exist."}\n'
+				r = b'{"e":1,"msg":"Blob does not exist."}\n'
 				start_response("404 NOT FOUND", [
 					("Content-Type", "application/json; charset=utf-8"),
 					("Content-Length", len(r)),
@@ -61,6 +99,8 @@ def blob(app, req, id):
 			start_response("200 OK", [
 				("Content-Type", b.mime),
 				("Content-Length", b.size),
+				("ETag", '"'+b.id+'"'),
+				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
 			])
 			return wrap_file(env, b.open())
 		finally:
