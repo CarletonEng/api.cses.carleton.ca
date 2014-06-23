@@ -24,47 +24,64 @@
 #                                                                              #
 ################################################################################
 
-from crypt import crypt
-from hmac import compare_digest
+import re
 
-from api import db
+from api import app, db
 
-class Person(db.Base):
-	""" A person.
-		
-		Instance Attributes:
-			id:
-				A string containing a unique hex ID representing the user.
-			name:
-				A string containing the users name.
-			auths:
-				A list of Auth objects that apply to the user.
-			perms:
-				A list of strings representing the permissions the user has.
+class Course(db.Base):
+	""" A course.
 	"""
 	
-	__tablename__ = 'person'
+	__tablename__ = "tbt-book-course"
 	
-	id       = db.Column(db.Hex, primary_key=True)
-	name     = db.Column(db.String)
-	namefull = db.Column(db.String)
-	__pw     = db.Column("pw", db.String, server_default="!")
-	perms    = db.Column(db.JSON, default=lambda:[]);
+	__id = db.Column("id", db.Integer, primary_key=True)
+	__code = db.Column("code", db.String(8), index=True, nullable=False)
+	__bookid = db.Column("bookid", db.ForeignKey("tbt-books.id"))
 	
-	auths = db.relationship("Auth", cascade="all, delete-orphan",
-	                        backref=db.backref("user", lazy="joined"))
+	CODE_STRIP = re.compile("[^A-Z0-9]+")
+	CODE_VALID = re.compile("[A-Z]{4}[0-9]{4}")
 	
-	tbt_books = db.relationship("TBTBook", backref=db.backref("user", lazy="joined"))
+	def __init__(self, code, **kwargs):
+		super().__init__(code=code, *kwargs)
 	
-	def password_set(self, pw):
-		""" Set the password """
-		self.__pw = crypt(pw)
+	@staticmethod
+	def code_normalize(code):
+		code = code.upper()
+		code = Course.CODE_STRIP.sub("", code) # Arguments are backwards.
+		
+		if not Course.CODE_VALID.fullmatch(code):
+			return None
+		
+		return code
 	
-	def password_check(self, pw):
-		""" Check if password is correct """
-		return compare_digest(crypt(pw, self.__pw), self.__pw)
+	@db.hybrid_property
+	def code(self):
+		return self.__code
+	
+	@code.setter
+	def code(self, code):
+		ncode = Course.code_normalize(code)
+		if not ncode:
+			raise TypeError("Invalid code "+repr(code))
+		self.__code = ncode
+
+class TBTBook(db.Base):
+	""" A book.
+	"""
+	
+	__tablename__ = "tbt-books"
+	
+	id = db.Column(db.Hex, primary_key=True)
+	title = db.Column(db.String, nullable=False)
+	__userid = db.Column("userid", db.Hex, db.ForeignKey("person.id"))
+	
+	courses = db.relationship("Course", cascade="all, delete-orphan",
+	                          backref=db.backref("book"))
+	
+	def __init__(self, owner, title, courses=()):
+		super().__init__(title=title, user=owner)
+		
+		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
 	def __repr__(self):
-		return "Person({}, {}, perms={})".format(self.id,
-		                                         repr(self.name),
-		                                         repr(self.perms))
+		return "Blob({})".format(self.id)

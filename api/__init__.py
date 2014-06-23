@@ -173,3 +173,4 @@ import api.blob.handler
 import api.csp.handler
 import api.person.handler
 import api.post.handler
+import api.tbtbook.handler

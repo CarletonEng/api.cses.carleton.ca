@@ -39,3 +39,4 @@ import api.person.sample
 import api.auth.sample
 import api.blob.sample
 import api.post.sample
+import api.tbtbook.sample

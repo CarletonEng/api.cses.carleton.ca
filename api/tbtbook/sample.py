@@ -24,47 +24,19 @@
 #                                                                              #
 ################################################################################
 
-from crypt import crypt
-from hmac import compare_digest
+import api.db as db
+from api.person import Person
+from api.tbtbook import TBTBook, Course
 
-from api import db
+sess = db.Session()
 
-class Person(db.Base):
-	""" A person.
-		
-		Instance Attributes:
-			id:
-				A string containing a unique hex ID representing the user.
-			name:
-				A string containing the users name.
-			auths:
-				A list of Auth objects that apply to the user.
-			perms:
-				A list of strings representing the permissions the user has.
-	"""
-	
-	__tablename__ = 'person'
-	
-	id       = db.Column(db.Hex, primary_key=True)
-	name     = db.Column(db.String)
-	namefull = db.Column(db.String)
-	__pw     = db.Column("pw", db.String, server_default="!")
-	perms    = db.Column(db.JSON, default=lambda:[]);
-	
-	auths = db.relationship("Auth", cascade="all, delete-orphan",
-	                        backref=db.backref("user", lazy="joined"))
-	
-	tbt_books = db.relationship("TBTBook", backref=db.backref("user", lazy="joined"))
-	
-	def password_set(self, pw):
-		""" Set the password """
-		self.__pw = crypt(pw)
-	
-	def password_check(self, pw):
-		""" Check if password is correct """
-		return compare_digest(crypt(pw, self.__pw), self.__pw)
-	
-	def __repr__(self):
-		return "Person({}, {}, perms={})".format(self.id,
-		                                         repr(self.name),
-		                                         repr(self.perms))
+def book(owner, title, courses):
+	b = TBTBook(owner, title, courses)
+	return b
+
+kevin = sess.query(Person).get("1")
+
+book(kevin, "ECOR 1010 Fun Facts", ["ECOR1010"])
+book(kevin, "C Programming Guide", ["ECOR 1005", "SYSC-2001"])
+
+sess.commit()

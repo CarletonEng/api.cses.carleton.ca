@@ -24,47 +24,50 @@
 #                                                                              #
 ################################################################################
 
-from crypt import crypt
-from hmac import compare_digest
+from urllib.parse import parse_qs
 
+import api
 from api import db
+from api.auth import auth
+from api.tbtbook import TBTBook
 
-class Person(db.Base):
-	""" A person.
+def fetchbook(f):
+	""" Converts first argument to TBTBook from id."""
+	@api.dbs
+	def w(self, id):
+		p = self.dbs.query(TBTBook).get(id)
+		if not p:
+			self.status_code = 404
+			self.content_type = "application/json; charset=utf-8"
+			self.data = '{"e":1, "msg": "TBTBook does not exist."}\n'
+			return
 		
-		Instance Attributes:
-			id:
-				A string containing a unique hex ID representing the user.
-			name:
-				A string containing the users name.
-			auths:
-				A list of Auth objects that apply to the user.
-			perms:
-				A list of strings representing the permissions the user has.
-	"""
-	
-	__tablename__ = 'person'
-	
-	id       = db.Column(db.Hex, primary_key=True)
-	name     = db.Column(db.String)
-	namefull = db.Column(db.String)
-	__pw     = db.Column("pw", db.String, server_default="!")
-	perms    = db.Column(db.JSON, default=lambda:[]);
-	
-	auths = db.relationship("Auth", cascade="all, delete-orphan",
-	                        backref=db.backref("user", lazy="joined"))
-	
-	tbt_books = db.relationship("TBTBook", backref=db.backref("user", lazy="joined"))
-	
-	def password_set(self, pw):
-		""" Set the password """
-		self.__pw = crypt(pw)
-	
-	def password_check(self, pw):
-		""" Check if password is correct """
-		return compare_digest(crypt(pw, self.__pw), self.__pw)
-	
-	def __repr__(self):
-		return "Person({}, {}, perms={})".format(self.id,
-		                                         repr(self.name),
-		                                         repr(self.perms))
+		return f(self, p)
+	return w
+
+@api.app.route("/tbt/book")
+class index(api.Handler):
+	@api.dbs
+	@auth
+	@api.json_out
+	def GET(self):
+		return {"e":0,
+			"books": [],
+		}
+
+@api.app.route("/tbt/book/(.*)")
+class person(api.Handler):
+	@fetchbook
+	@auth
+	@api.json_out
+	def GET(self, b):
+		if not self.app.config.debug:
+			# Cache for a day unless the dev server.
+			# ...or 3 on error.
+			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
+		
+		return {"e":0,
+			"id":  b.id,
+			"title": b.title,
+			"courses": [c.code for c in b.courses],
+		}
