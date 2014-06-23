@@ -24,6 +24,8 @@
 #                                                                              #
 ################################################################################
 
+import os.path
+
 from api import db
 from api.blob import Blob
 
@@ -35,7 +37,12 @@ def blob(mime, content):
 	sess.add(b)
 	return b
 
+def file(mime, name):
+	name = os.path.join(os.path.dirname(__file__), name)
+	return blob(mime, open(name, "rb"))
+
 # 99E9CFEF7680554C6E705C8B723D6563381B12FB
-blob("text/plain; charset=utf8", b"Hello, I am a blob.\n")
+blob("text/plain; charset=utf8", [b"Hello, I am a blob.\n"])
+file("image/png", "sample/cses.png")
 
 sess.commit()
