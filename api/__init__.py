@@ -113,6 +113,17 @@ def json_in(f):
 		f(self, *args)
 	return w
 
+def tojson(o):
+	if app.config.debug:
+		j = json.dumps(o, indent="\t")
+	else:
+		j = json.dumps(o, separators=(",",":"))
+	
+	j = j+"\n"
+	if app.config.debug:
+		print(j)
+	return j
+
 def json_out(f):
 	""" wrapper to format handlers output as json
 		
@@ -121,8 +132,8 @@ def json_out(f):
 	"""
 	def w(self, *args):
 		r = f(self, *args)
-		self.content_type = "application/json; charset=utf-8"
-		self.data = json.dumps(r)+"\n"
+		self.content_type = "application/json"
+		self.data = tojson(r)
 	return w
 
 def json_io(f):
@@ -148,7 +159,7 @@ def json_io(f):
 		
 		r = f(self, *args)
 		self.content_type = "application/json; charset=utf-8"
-		self.data = json.dumps(r)+"\n"
+		self.data = tojson(r)
 	return w
 
 @app.route("/")
