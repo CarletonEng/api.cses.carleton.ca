@@ -92,13 +92,13 @@ def blob(app, req, id):
 				r = b'{"e":1,"msg":"Blob does not exist."}\n'
 				start_response("404 NOT FOUND", [
 					("Content-Type", "application/json; charset=utf-8"),
-					("Content-Length", len(r)),
+					("Content-Length", str(len(r))),
 				])
 				return r,
 			
 			start_response("200 OK", [
 				("Content-Type", b.mime),
-				("Content-Length", b.size),
+				("Content-Length", str(b.size)),
 				("ETag", '"'+b.id+'"'),
 				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
 			])
