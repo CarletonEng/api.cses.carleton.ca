@@ -71,15 +71,15 @@ class TBTBook(db.Base):
 	
 	__tablename__ = "tbt-books"
 	
-	id = db.Column(db.Hex, primary_key=True)
-	title = db.Column(db.String, nullable=False)
-	__userid = db.Column("userid", db.Hex, db.ForeignKey("person.id"))
+	id         = db.Column(db.Hex, primary_key=True)
+	title      = db.Column(db.String, nullable=False)
+	__sellerid = db.Column("sellerid", db.Hex, db.ForeignKey("person.id"))
 	
 	courses = db.relationship("Course", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
-	def __init__(self, owner, title, courses=()):
-		super().__init__(title=title, user=owner)
+	def __init__(self, seller, title, courses=()):
+		super().__init__(title=title, seller=seller)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	

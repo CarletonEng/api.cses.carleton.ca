@@ -51,13 +51,22 @@ class index(api.Handler):
 	@auth
 	@api.json_out
 	def GET(self):
+		q = self.dbs.query(TBTBook)
+		
 		return {"e":0,
-			"books": [],
+			"books": [{
+				"id": b.id,
+				"title": b.title,
+				"seller": {
+					"id": b.seller.id,
+					"name": b.seller.name,
+				},
+			} for b in q],
 		}
 
 @api.app.route("/tbt/book/(.*)")
 class person(api.Handler):
-	@fetchbook
+	@api.dbfetch(TBTBook)
 	@auth
 	@api.json_out
 	def GET(self, b):
@@ -70,4 +79,5 @@ class person(api.Handler):
 			"id":  b.id,
 			"title": b.title,
 			"courses": [c.code for c in b.courses],
+			"seller": b.seller.id
 		}

@@ -95,6 +95,28 @@ def dbs(f):
 				self.dbs.close()
 	return w
 
+def dbfetch(klass, arg=1):
+	def d(f):
+		@dbs
+		def w(self, *args):
+			try:
+				p = self.dbs.query(klass).get(args[arg-1])
+			except db.StatementError as e:
+				self.status_code = 400
+				self.content_type = "application/json; charset=utf-8"
+				self.data = '{"e":1,"msg":"Invalid ID"}\n'
+				return
+			
+			if not p:
+				self.status_code = 404
+				self.content_type = "application/json; charset=utf-8"
+				self.data = '{"e":1,"msg":"Item does not exist."}\n'
+				return
+			
+			return f(self, p)
+		return w
+	return d
+
 def json_in(f):
 	""" wrapper to parse json input.
 		

@@ -54,7 +54,7 @@ class Person(db.Base):
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
-	tbt_books = db.relationship("TBTBook", backref=db.backref("user", lazy="joined"))
+	tbt_books = db.relationship("TBTBook", backref=db.backref("seller", lazy="joined"))
 	
 	def password_set(self, pw):
 		""" Set the password """
