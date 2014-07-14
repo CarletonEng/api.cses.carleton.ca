@@ -46,7 +46,7 @@ class Person(db.Base):
 	__tablename__ = 'person'
 	
 	id       = db.Column(db.Hex, primary_key=True)
-	number   = db.Column(db.Integer, nullable=False)
+	number   = db.Column(db.Integer, unique=True, nullable=False)
 	name     = db.Column(db.String, nullable=False)
 	namefull = db.Column(db.String, nullable=False)
 	__pw     = db.Column("pw", db.String, server_default="!")

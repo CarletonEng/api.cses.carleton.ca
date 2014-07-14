@@ -28,6 +28,27 @@ import re
 
 from api import app, db
 
+class CourseCode(db.TypeDecorator):
+	""" A Course code
+		It does some normalization and validation.
+	"""
+	impl = db.String
+	
+	CODE_STRIP = re.compile("[^A-Z0-9]+")
+	CODE_VALID = re.compile("[A-Z]{4}[0-9]{4}")
+	
+	def __init__(self):
+		super().__init__(8)
+	
+	def process_bind_param(self, value, dialect):
+		code = value.upper()
+		code = CourseCode.CODE_STRIP.sub("", code) # Arguments are backwards.
+		
+		if not CourseCode.CODE_VALID.fullmatch(code):
+			return None
+		
+		return code
+
 class Course(db.Base):
 	""" A course.
 	"""
@@ -35,35 +56,11 @@ class Course(db.Base):
 	__tablename__ = "tbt-book-course"
 	
 	__id = db.Column("id", db.Integer, primary_key=True)
-	__code = db.Column("code", db.String(8), index=True, nullable=False)
+	code = db.Column("code", CourseCode, index=True, nullable=False)
 	__bookid = db.Column("bookid", db.ForeignKey("tbt-books.id"))
-	
-	CODE_STRIP = re.compile("[^A-Z0-9]+")
-	CODE_VALID = re.compile("[A-Z]{4}[0-9]{4}")
 	
 	def __init__(self, code, **kwargs):
 		super().__init__(code=code, *kwargs)
-	
-	@staticmethod
-	def code_normalize(code):
-		code = code.upper()
-		code = Course.CODE_STRIP.sub("", code) # Arguments are backwards.
-		
-		if not Course.CODE_VALID.fullmatch(code):
-			return None
-		
-		return code
-	
-	@db.hybrid_property
-	def code(self):
-		return self.__code
-	
-	@code.setter
-	def code(self, code):
-		ncode = Course.code_normalize(code)
-		if not ncode:
-			raise TypeError("Invalid code "+repr(code))
-		self.__code = ncode
 
 class TBTBook(db.Base):
 	""" A book.
@@ -73,15 +70,16 @@ class TBTBook(db.Base):
 	
 	id         = db.Column(db.Hex, primary_key=True)
 	title      = db.Column(db.String, nullable=False)
+	sold       = db.Column(db.Boolean, index=True, nullable=False)
 	__sellerid = db.Column("sellerid", db.Hex, db.ForeignKey("person.id"))
 	
 	courses = db.relationship("Course", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
-	def __init__(self, seller, title, courses=()):
-		super().__init__(title=title, seller=seller)
+	def __init__(self, seller, title, courses=(), sold=False):
+		super().__init__(title=title, seller=seller, sold=sold)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
 	def __repr__(self):
-		return "Blob({})".format(self.id)
+		return "TBTBook({}, {})".format(self.id, repr(self.title))

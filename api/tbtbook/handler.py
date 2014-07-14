@@ -29,21 +29,7 @@ from urllib.parse import parse_qs
 import api
 from api import db
 from api.auth import auth
-from api.tbtbook import TBTBook
-
-def fetchbook(f):
-	""" Converts first argument to TBTBook from id."""
-	@api.dbs
-	def w(self, id):
-		p = self.dbs.query(TBTBook).get(id)
-		if not p:
-			self.status_code = 404
-			self.content_type = "application/json; charset=utf-8"
-			self.data = '{"e":1, "msg": "TBTBook does not exist."}\n'
-			return
-		
-		return f(self, p)
-	return w
+from api.tbtbook import TBTBook, Course
 
 @api.app.route("/tbt/book")
 class index(api.Handler):
@@ -51,12 +37,29 @@ class index(api.Handler):
 	@auth
 	@api.json_out
 	def GET(self):
+		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
+		
 		q = self.dbs.query(TBTBook)
+		
+		if "sold" not in uq:
+			q = q.filter(TBTBook.sold == False)
+		
+		if "course" in uq:
+			q = q.join(Course).filter(Course.code == uq["course"][0])
+		
+		if "title" in uq:
+			words = uq["title"][0].split(" ")
+			
+			if len(words) > 10: # You are asking for a lot.
+				words = words[:5]
+			
+			q = q.filter(*(TBTBook.title.ilike("%"+t+"%") for t in words))
 		
 		return {"e":0,
 			"books": [{
 				"id": b.id,
 				"title": b.title,
+				"courses": [c.code for c in b.courses],
 				"seller": {
 					"id": b.seller.id,
 					"name": b.seller.name,

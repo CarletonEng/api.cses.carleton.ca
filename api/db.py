@@ -29,7 +29,7 @@ import json
 from binascii import hexlify, unhexlify
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, BINARY, ForeignKey, DateTime
+from sqlalchemy import Column, Boolean, Integer, String, BINARY, ForeignKey, DateTime
 from sqlalchemy.exc import StatementError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref

@@ -29,27 +29,6 @@ from api import db
 from api.person import Person
 from api.auth import Auth, auth, authrequired
 
-def fetchuser(f):
-	""" Converts first argument to Person from id."""
-	@api.dbs
-	def w(self, id):
-		try:
-			int(id, 16)
-		except:
-			self.status_code = 400
-			self.content_type = "application/json; charset=utf-8"
-			self.data = '{"e":1, "msg": "id must be a hex string."}\n'
-			return
-		
-		p = self.dbs.query(Person).filter(Person.id == id).first()
-		if not p:
-			self.status_code = 404
-			self.data = '{"e":1, "msg": "Person does not exist."}\n'
-			return
-		
-		return f(self, p)
-	return w
-
 @api.app.route("/person")
 class index(api.Handler):
 	@authrequired
@@ -76,7 +55,7 @@ class index(api.Handler):
 
 @api.app.route("/person/([^/]*)")
 class person(api.Handler):
-	@fetchuser
+	@api.dbfetch(Person)
 	@auth
 	@api.json_out
 	def GET(self, p):
@@ -97,7 +76,7 @@ class person(api.Handler):
 		
 		return r
 	
-	@fetchuser
+	@api.dbfetch(Person)
 	@auth
 	@api.json_io
 	def PUT(self, p):

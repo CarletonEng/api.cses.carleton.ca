@@ -28,7 +28,7 @@
 
 import os
 
-os.environ["CSESAPI_DEBUG"] = "TRUE"
+# os.environ["CSESAPI_DEBUG"] = "TRUE"
 
 from api import app
 
