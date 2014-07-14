@@ -70,14 +70,15 @@ class TBTBook(db.Base):
 	
 	id         = db.Column(db.Hex, primary_key=True)
 	title      = db.Column(db.String, nullable=False)
+	price      = db.Column(db.Integer, nullable=False)
 	sold       = db.Column(db.Boolean, index=True, nullable=False)
 	__sellerid = db.Column("sellerid", db.Hex, db.ForeignKey("person.id"))
 	
 	courses = db.relationship("Course", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
-	def __init__(self, seller, title, courses=(), sold=False):
-		super().__init__(title=title, seller=seller, sold=sold)
+	def __init__(self, seller, title, price, courses=(), sold=False):
+		super().__init__(title=title, price=price, seller=seller, sold=sold)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	

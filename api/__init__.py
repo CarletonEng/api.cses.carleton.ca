@@ -161,7 +161,7 @@ def json_out(f):
 def json_io(f):
 	""" wrapper to handle json input and output
 		
-		This wrapper parsed a json request, returning json errors if the request
+		This wrapper parses a json request, returning json errors if the request
 		doesn't contain json.  The parsed json object is then put in
 		`self.req.json` and the wrapped function is called.  The return value
 		of said function is then formatted as json and written to the response.

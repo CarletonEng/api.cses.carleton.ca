@@ -52,7 +52,6 @@ class index(api.Handler):
 	@api.json_out
 	def GET(self):
 		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
-		print("uq", uq)
 		
 		dbq = self.dbs.query(Post.id, Post.title)
 		

@@ -30,14 +30,14 @@ from api.tbtbook import TBTBook, Course
 
 sess = db.Session()
 
-def book(owner, title, courses, **kwargs):
-	b = TBTBook(owner, title, courses, **kwargs)
+def book(owner, title, price, courses, **kwargs):
+	b = TBTBook(owner, title, price, courses, **kwargs)
 	return b
 
 kevin = sess.query(Person).get("1")
 
-book(kevin, "ECOR 1010 Fun Facts", ["ECOR1010"])
-book(kevin, "C Programming Guide", ["ECOR 1005", "SYSC-2001"])
-book(kevin, "Guide to Engineering", ["ECOR1010", "FOOB1234"], sold=True)
+book(kevin, "ECOR 1010 Fun Facts", 100, ["ECOR1010"])
+book(kevin, "C Programming Guide", 1000, ["ECOR 1005", "SYSC-2001"])
+book(kevin, "Guide to Engineering", 10000, ["ECOR1010", "FOOB1234"], sold=True)
 
 sess.commit()

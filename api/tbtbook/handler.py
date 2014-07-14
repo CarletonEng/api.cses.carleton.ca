@@ -29,6 +29,7 @@ from urllib.parse import parse_qs
 import api
 from api import db
 from api.auth import auth
+from api.person import Person
 from api.tbtbook import TBTBook, Course
 
 @api.app.route("/tbt/book")
@@ -59,12 +60,40 @@ class index(api.Handler):
 			"books": [{
 				"id": b.id,
 				"title": b.title,
+				"price": b.price/100,
 				"courses": [c.code for c in b.courses],
 				"seller": {
 					"id": b.seller.id,
 					"name": b.seller.name,
 				},
 			} for b in q],
+		}
+	
+	@api.dbs
+	@auth
+	@api.json_io
+	def PUT(self):
+		if "tbt" not in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":1, "msg": "Permission denied."}
+		
+		if ("title" not in self.req.json
+		   or "price" not in self.req.json
+		   or "courses" not in self.req.json):
+			self.status_code = 400
+			return {"e":1, "msg": "Bad request."}
+		
+		courses = [Course(c) for c in self.req.json["courses"]]
+		
+		b = TBTBook(self.dbs.query(Person).get("1"),
+		            self.req.json["title"],
+		            int(float(self.req.json["price"])*100),
+		            courses)
+		self.dbs.add(b)
+		self.dbs.commit()
+		
+		return {"e":0,
+			"id": b.id,
 		}
 
 @api.app.route("/tbt/book/(.*)")
@@ -81,6 +110,7 @@ class person(api.Handler):
 		return {"e":0,
 			"id":  b.id,
 			"title": b.title,
+			"price": b.price/100,
 			"courses": [c.code for c in b.courses],
 			"seller": b.seller.id
 		}
