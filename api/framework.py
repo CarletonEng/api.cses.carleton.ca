@@ -28,7 +28,6 @@ import re
 from datetime import datetime
 
 import werkzeug.wrappers
-import webob
 
 class Handler(werkzeug.wrappers.Response):
 	""" A framework for handling requests.
