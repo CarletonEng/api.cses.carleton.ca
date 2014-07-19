@@ -25,7 +25,7 @@
 ################################################################################
 
 import api.db as db
-from api.person import Person
+from api.person import Person, Email
 
 sess = db.Session()
 
@@ -38,8 +38,9 @@ def person(id, name, full, pw, perms):
 	sess.add(p)
 	return p
 
-person(999123456, "Kevin", "Kevin Cox", "passwd",
-       ["selfw","selfr","personr","personw","upload","tbt"])
+k = person(999123456, "Kevin", "Kevin Cox", "passwd",
+           ["selfw","selfr","personr","personw","upload","tbt"])
+sess.add(Email(user=k, email="kevincox@kevincox.ca"))
 person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw"])
 person(999111111, "John", "John Doe", "password1", ["selfr","selfw"])
 person(999222222, "Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])

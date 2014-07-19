@@ -29,6 +29,19 @@ from hmac import compare_digest
 
 from api import db
 
+class Email(db.Base):
+	""" Email address.
+	"""
+	
+	__tablename__ = "person-email"
+	
+	email    = db.Column(db.String, primary_key=True)
+	__userid = db.Column("userid", db.ForeignKey("person.id"), primary_key=True)
+	rank     = db.Column(db.Integer, nullable=False, default=lambda:1)
+	
+	def __repr__(self):
+		return "Email({}, {}, {})".format(repr(email), repr(user), rank)
+
 class Person(db.Base):
 	""" A person.
 		
@@ -50,12 +63,18 @@ class Person(db.Base):
 	name     = db.Column(db.String, nullable=False)
 	namefull = db.Column(db.String, nullable=False)
 	__pw     = db.Column("pw", db.String, server_default="!")
-	perms    = db.Column(db.JSON, default=lambda:[]);
+	perms    = db.Column(db.JSON, default=lambda:[])
+	
+	emails = db.relationship(Email, cascade="all, delete-orphan",
+	                         backref=db.backref("user", lazy="joined"))
 	
 	auths = db.relationship("Auth", cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
-	tbt_books = db.relationship("TBTBook", backref=db.backref("seller", lazy="joined"))
+	tbt_books = db.relationship("TBTBook", foreign_keys="TBTBook._sellerid",
+	                            backref=db.backref("seller", lazy="joined"))
+	tbt_booksbought = db.relationship("TBTBook", foreign_keys="TBTBook._buyerid",
+	                                  backref=db.backref("buyer", lazy="joined"))
 	
 	def password_set(self, pw):
 		""" Set the password """

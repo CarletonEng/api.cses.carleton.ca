@@ -43,7 +43,7 @@ class index(api.Handler):
 		q = self.dbs.query(TBTBook)
 		
 		if "sold" not in uq:
-			q = q.filter(TBTBook.sold == False)
+			q = q.filter(TBTBook.buyer == None)
 		
 		if "course" in uq:
 			q = q.join(Course).filter(Course.code == uq["course"][0])
@@ -66,6 +66,7 @@ class index(api.Handler):
 					"id": b.seller.id,
 					"name": b.seller.name,
 				},
+				"buyer": b.buyer and b.buyer.id
 			} for b in q],
 		}
 	
@@ -77,15 +78,27 @@ class index(api.Handler):
 			self.status_code = 403
 			return {"e":1, "msg": "Permission denied."}
 		
-		if ("title" not in self.req.json
-		   or "price" not in self.req.json
-		   or "courses" not in self.req.json):
+		if not "title" in self.req.json:
 			self.status_code = 400
-			return {"e":1, "msg": "Bad request."}
+			return {"e":1, "msg": "Missing Title."}
+		if not "price" in self.req.json:
+			self.status_code = 400
+			return {"e":1, "msg": "Missing Price."}
+		if not "courses" in self.req.json:
+			self.status_code = 400
+			return {"e":1, "msg": "Missing Courses."}
+		if not "seller" in self.req.json:
+			self.status_code = 400
+			return {"e":1, "msg": "Missing Seller."}
+		
+		seller = self.dbs.query(Person).get(self.req.json["seller"])
+		if not seller:
+			self.status_code = 400
+			return {"e":1, "msg": "Seller does not exist."}
 		
 		courses = [Course(c) for c in self.req.json["courses"]]
 		
-		b = TBTBook(self.dbs.query(Person).get("1"),
+		b = TBTBook(seller,
 		            self.req.json["title"],
 		            int(float(self.req.json["price"])*100),
 		            courses)
@@ -112,5 +125,6 @@ class person(api.Handler):
 			"title": b.title,
 			"price": b.price/100,
 			"courses": [c.code for c in b.courses],
-			"seller": b.seller.id
+			"seller": b.seller.id,
+			"buyer": b.buyer and b.buyer.id,
 		}

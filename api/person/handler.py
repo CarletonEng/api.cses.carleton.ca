@@ -24,13 +24,53 @@
 #                                                                              #
 ################################################################################
 
+from urllib.parse import parse_qs
+
 import api
 from api import db
-from api.person import Person
+from api.person import Person, Email
 from api.auth import Auth, auth, authrequired
 
 @api.app.route("/person")
 class index(api.Handler):
+	@auth
+	@api.json_out
+	@api.dbs
+	def GET(self):
+		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
+		
+		q = self.dbs.query(Person)
+		
+		all = self.req.auth and "personr" in self.req.auth.perms
+		
+		if "name" in uq:
+			n = "%"+uq["name"][0]+"%"
+			q = q.filter(Person.name.ilike(n) | Person.namefull.ilike(n))
+		
+		if "number" in uq:
+			if not all:
+				self.status_code = 403
+				return {"e":0, "msg":"You may not filter by student number."}
+			
+			s = uq["number"][0]
+			mult = 10**(9-len(s))
+			n = int(s)
+			min = (n  ) * mult
+			max = (n+1) * mult
+			
+			q = q.filter(Person.number >= min, Person.number < max)
+		
+		q = q.limit(20)
+		
+		return {"e":0,
+			"people": [{
+				"id":       p.id,
+				"name":     p.name,
+				"namefull": p.namefull,
+				"number":   p.number if all else None,
+			} for p in q]
+		}
+	
 	@authrequired
 	@api.json_io
 	@api.dbs
@@ -39,13 +79,30 @@ class index(api.Handler):
 		
 		if "personw" not in self.req.auth.perms:
 			self.status_code = 403
-			return {"e":1,"msg":"You don't have permission to do that."}
+			return {"e":1, "msg":"You don't have permission to do that."}
 		
 		p = Person()
 		self.dbs.add(p)
 		
-		if "name" in j:
-			p.name = j["name"]
+		if not ("name" in j and j["name"]):
+			self.status_code = 400
+			return {"e":1, "msg":"Name required."}
+		if not ("namefull" in j and j["namefull"]):
+			self.status_code = 400
+			return {"e":1, "msg":"Full name required."}
+		if not "number" in j:
+			self.status_code = 400
+			return {"e":1, "msg":"Number required."}
+		if not "name" in j and j["name"]:
+			self.status_code = 400
+			return {"e":1, "msg":"Name required."}
+		
+		p.name     = j["name"]
+		p.namefull = j["namefull"]
+		p.number   = j["number"]
+		
+		if "emails" in j:
+			p.emails = [Email(email=e) for e in j["emails"]]
 		
 		self.dbs.commit()
 		
@@ -72,6 +129,11 @@ class person(api.Handler):
 		if all:
 			r.update({
 				"perms": p.perms,
+				"number": p.number,
+				"emails": [{
+					"email": e.email,
+					"rank": e.rank,
+				} for e in p.emails]
 			})
 		
 		return r

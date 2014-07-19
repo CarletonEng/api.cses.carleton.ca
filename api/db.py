@@ -57,10 +57,10 @@ class Hex(TypeDecorator):
 	impl = Integer
 	
 	def process_bind_param(self, value, dialect):
-		return int(value, 16)
+		return int(value, 16) if value is not None else None
 	
 	def process_result_value(self, value, dialect):
-		return format(int(value), "X")
+		return format(int(value), "X") if value is not None else None
 
 class HexLong(TypeDecorator):
 	""" A long hex column
