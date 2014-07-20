@@ -28,7 +28,7 @@ from urllib.parse import parse_qs
 
 import api
 from api import db
-from api.auth import auth
+from api.auth import auth, authrequired
 from api.person import Person
 from api.tbtbook import TBTBook, Course
 
@@ -109,8 +109,18 @@ class index(api.Handler):
 			"id": b.id,
 		}
 
+@api.app.route("/tbt/book/stats")
+class stats(api.Handler):
+	@authrequired
+	@api.json_out
+	def GET(self):
+		
+		
+		return {"e":0,
+		}
+
 @api.app.route("/tbt/book/(.*)")
-class person(api.Handler):
+class book(api.Handler):
 	@api.dbfetch(TBTBook)
 	@auth
 	@api.json_out
@@ -128,3 +138,28 @@ class person(api.Handler):
 			"seller": b.seller.id,
 			"buyer": b.buyer and b.buyer.id,
 		}
+	
+	@api.dbfetch(TBTBook)
+	@authrequired
+	@api.json_io
+	def PUT(self, b):
+		if not "tbt" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":0, "msg": "You are not allowed."}
+		
+		j = self.req.json
+		
+		if "buyer" in j:
+			if b.buyer:
+				self.status_code = 409
+				return {"e":1, "msg": "Already sold."}
+			
+			buyer = self.dbs.query(Person).get(j["buyer"])
+			if not buyer:
+				self.status_code = 400
+				return {"e":1, "msg": "Buyer does not exist."}
+			
+			b.buyer = buyer
+		
+		self.dbs.commit()
+		return {"e":0}
