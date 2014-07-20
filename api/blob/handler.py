@@ -40,7 +40,7 @@ class index(api.Handler):
 	@api.json_out
 	def PUT(self):
 		if not "upload" in self.req.auth.perms:
-			# The client doesn't actually get this for larger because the
+			# The client doesn't actually get this for larger files because the
 			# connection gets aborted when we don't accept their upload.
 			
 			self.status_code = 403
@@ -73,7 +73,7 @@ class index(api.Handler):
 			"new": new,
 		}
 
-@api.app.route("/blob/([^/?#]*).*")
+@api.app.route("/blob/(.*)")
 def blob(app, req, id):
 	id = id.upper()
 	
