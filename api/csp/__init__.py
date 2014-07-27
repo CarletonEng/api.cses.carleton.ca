@@ -52,7 +52,7 @@ class CSPViolation(db.Base):
 	date       = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 	source     = db.Column(db.String)
 	useragent  = db.Column(db.String)
-	__reportid = db.Column("reportid", db.Hex, db.ForeignKey("csp-report.id"))
+	__reportid = db.Column("reportid", db.ForeignKey("csp-report.id"))
 	
 	def __init__(self, report, ua="not provided", ip="not provided"):
 		self.report = report

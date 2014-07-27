@@ -75,6 +75,7 @@ class Person(db.Base):
 	                            backref=db.backref("seller", lazy="joined"))
 	tbt_booksbought = db.relationship("TBTBook", foreign_keys="TBTBook._buyerid",
 	                                  backref=db.backref("buyer", lazy="joined"))
+	tbt_changes = db.relationship("TBTBookChange", backref=db.backref("user"))
 	
 	def password_set(self, pw):
 		""" Set the password """

@@ -26,11 +26,13 @@
 
 # This script starts a development server.
 
-import os
+import os, sys
 
 # os.environ["CSESAPI_DEBUG"] = "TRUE"
 
 from api import app
 
+bind = sys.argv[1] if len(sys.argv) > 1 else "localhost"
+
 app.create()
-app.devserver()
+app.devserver(host=bind)

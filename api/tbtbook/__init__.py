@@ -62,6 +62,15 @@ class Course(db.Base):
 	def __init__(self, code, **kwargs):
 		super().__init__(code=code, *kwargs)
 
+class TBTBookChange(db.Base):
+	__tablename__ = "tbt-books-change"
+	
+	__id = db.Column("id", db.Hex, primary_key=True)
+	__userid = db.Column("user", db.ForeignKey("person.id"))
+	__bookid = db.Column("book", db.ForeignKey("tbt-books.id"))
+	
+	desc = db.Column(db.String, nullable=False)
+
 class TBTBook(db.Base):
 	""" A book.
 	"""
@@ -71,10 +80,13 @@ class TBTBook(db.Base):
 	id        = db.Column(db.Hex, primary_key=True)
 	title     = db.Column(db.String, nullable=False)
 	price     = db.Column(db.Integer, nullable=False)
-	_buyerid  = db.Column("buyer", db.Hex, db.ForeignKey("person.id"))
-	_sellerid = db.Column("seller", db.Hex, db.ForeignKey("person.id"))
+	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"))
+	_sellerid = db.Column("seller", db.ForeignKey("person.id"))
 	
 	courses = db.relationship("Course", cascade="all, delete-orphan",
+	                          backref=db.backref("book"))
+	
+	changes = db.relationship("TBTBookChange", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
 	def __init__(self, seller, title, price, courses=(), **kwargs):
@@ -83,4 +95,14 @@ class TBTBook(db.Base):
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
 	def __repr__(self):
-		return "TBTBook({}, {})".format(self.id, repr(self.title))
+		return "\n".join([
+			"TBTBook({},",
+			"        title={},",
+			"        price={},",
+			"        buyer={},",
+			"        seller={})",
+		).format(self.id,
+		         repr(self.title),
+		         repr(self.price),
+		         repr(self._buyerid),
+		         repr(self._sellerid))

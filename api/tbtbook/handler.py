@@ -30,7 +30,7 @@ import api
 from api import db
 from api.auth import auth, authrequired
 from api.person import Person
-from api.tbtbook import TBTBook, Course
+from api.tbtbook import TBTBook, TBTBookChange, Course
 
 @api.app.route("/tbt/book")
 class index(api.Handler):
@@ -78,6 +78,9 @@ class index(api.Handler):
 			self.status_code = 403
 			return {"e":1, "msg": "Permission denied."}
 		
+		if not "authorizer" in self.req.json:
+			self.status_code = 400
+			return {"e":1, "msg": "The authorizer is required."}
 		if not "title" in self.req.json:
 			self.status_code = 400
 			return {"e":1, "msg": "Missing Title."}
@@ -91,6 +94,14 @@ class index(api.Handler):
 			self.status_code = 400
 			return {"e":1, "msg": "Missing Seller."}
 		
+		authorizer = self.dbs.query(Person).get(self.req.json["authorizer"])
+		if not authorizer:
+			self.status_code = 400
+			return {"e":1, "msg": "Authorizer is not a person."}
+		if not "tbt" in authorizer.perms:
+			self.status_code = 403
+			return {"e":1, "msg": "Authorizer is not allowed to make changes."}
+		
 		seller = self.dbs.query(Person).get(self.req.json["seller"])
 		if not seller:
 			self.status_code = 400
@@ -102,7 +113,10 @@ class index(api.Handler):
 		            self.req.json["title"],
 		            int(float(self.req.json["price"])*100),
 		            courses)
-		self.dbs.add(b)
+		c = TBTBookChange(book=b,
+		                  desc="Created "+repr(b),
+		                  user=authorizer)
+		self.dbs.add(b, c)
 		self.dbs.commit()
 		
 		return {"e":0,
