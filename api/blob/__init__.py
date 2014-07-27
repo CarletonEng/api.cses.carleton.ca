@@ -31,6 +31,7 @@ from hashlib import sha1
 
 from werkzeug.wsgi import wrap_file
 
+import api
 from api import app, db
 
 class Blob(db.Base):
@@ -121,4 +122,4 @@ class Blob(db.Base):
 		os.rename(tmp, self.path)
 	
 	def __repr__(self):
-		return "Blob({})".format(self.id)
+		return api.autorepr(self, self.id)

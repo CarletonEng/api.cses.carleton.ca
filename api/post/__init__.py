@@ -24,6 +24,7 @@
 #                                                                              #
 ################################################################################
 
+import api
 from api import db
 
 class Post(db.Base):
@@ -66,4 +67,4 @@ class Post(db.Base):
 		return self.__dir
 	
 	def __repr__(self):
-		return "Post({}, {})".format(self.id, self.type)
+		return api.autorepr(self, self.id, self.type)

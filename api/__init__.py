@@ -31,6 +31,26 @@ import os.path
 from api import framework
 from api.config import Config
 
+def autorepr(self, *args, **kwargs):
+	leader = type(self).__name__ + "("
+	a = " "*len(leader)
+	
+	first = [True]
+	def ifnf(s):
+		""" Output string if not first.
+		"""
+		if first[0]:
+			first[0] = False
+			return ""
+		else:
+			return s
+	
+	return "".join([leader] + [
+		ifnf(", ")+repr(a) for a in args
+	] + [
+		ifnf(",\n"+a)+k+"="+repr(v) for k, v in kwargs.items()
+	] + [")"])
+
 class CSESAPI(framework.App):
 	""" Our App.
 		

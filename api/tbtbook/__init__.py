@@ -26,6 +26,7 @@
 
 import re
 
+import api
 from api import app, db
 
 class CourseCode(db.TypeDecorator):
@@ -95,14 +96,8 @@ class TBTBook(db.Base):
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
 	def __repr__(self):
-		return "\n".join([
-			"TBTBook({},",
-			"        title={},",
-			"        price={},",
-			"        buyer={},",
-			"        seller={})",
-		).format(self.id,
-		         repr(self.title),
-		         repr(self.price),
-		         repr(self._buyerid),
-		         repr(self._sellerid))
+		return api.autorepr(self, self.id,
+		                    title=self.title,
+		                    price=self.price,
+		                    buyer=self._buyerid,
+		                    seller=self._sellerid)

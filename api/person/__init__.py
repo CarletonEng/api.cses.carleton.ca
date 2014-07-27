@@ -27,6 +27,7 @@
 from crypt import crypt
 from hmac import compare_digest
 
+import api
 from api import db
 
 class Email(db.Base):
@@ -40,7 +41,7 @@ class Email(db.Base):
 	rank     = db.Column(db.Integer, nullable=False, default=lambda:1)
 	
 	def __repr__(self):
-		return "Email({}, {}, {})".format(repr(email), repr(user), rank)
+		return api.autorepr(self, self.email, self.user, self.rank)
 
 class Person(db.Base):
 	""" A person.
@@ -86,6 +87,4 @@ class Person(db.Base):
 		return compare_digest(crypt(pw, self.__pw), self.__pw)
 	
 	def __repr__(self):
-		return "Person({}, {}, perms={})".format(self.id,
-		                                         repr(self.name),
-		                                         repr(self.perms))
+		return api.autorepr(self, self.id, self.name, self.perms)
