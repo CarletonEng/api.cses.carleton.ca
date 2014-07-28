@@ -114,7 +114,7 @@ class index(api.Handler):
 		            int(float(self.req.json["price"])*100),
 		            courses)
 		c = TBTBookChange(book=b,
-		                  desc="created "+repr(b),
+		                  desc="created\n"+repr(b),
 		                  user=authorizer)
 		self.dbs.add(b, c)
 		self.dbs.commit()
@@ -163,6 +163,17 @@ class book(api.Handler):
 		
 		j = self.req.json
 		
+		if not "authorizer" in j:
+			self.status_code = 400
+			return {"e":1, "msg":"Authorizer Required"}
+		authorizer = self.dbs.query(Person).get(j["authorizer"])
+		if not authorizer:
+			self.status_code = 400
+			return {"e":1, "msg":"Authorizer does not exist."}
+		if not "tbt" in authorizer.perms:
+			self.status_code = 403
+			return {"e":1, "msg":"Authorizer is not allowed to make changes."}
+		
 		if "buyer" in j:
 			if b.buyer:
 				self.status_code = 409
@@ -174,6 +185,9 @@ class book(api.Handler):
 				return {"e":1, "msg": "Buyer does not exist."}
 			
 			b.buyer = buyer
+			c = TBTBookChange(book=b,
+			                  desc="sold book to \n"+repr(buyer),
+			                  user=authorizer)
 		
 		self.dbs.commit()
 		return {"e":0}
