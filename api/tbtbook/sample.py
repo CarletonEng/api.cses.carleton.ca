@@ -26,21 +26,27 @@
 
 import api.db as db
 from api.person import Person
-from api.tbtbook import TBTBook, Course
+from api.tbtbook import TBTBook, TBTBookChange, Course
 
 sess = db.Session()
 
 def book(owner, title, price, courses, buyer=None, **kwargs):
-	if buyer:
-		buyer = sess.query(Person).get(buyer)
-	
 	b = TBTBook(owner, title, price, courses, buyer=buyer, **kwargs)
+	sess.add(b)
 	return b
 
 kevin = sess.query(Person).get("1")
+jane  = sess.query(Person).get("2")
+john  = sess.query(Person).get("3")
+print(kevin, jane, john)
 
-book(kevin, "ECOR 1010 Fun Facts", 100, ["ECOR1010"])
-book(kevin, "C Programming Guide", 1000, ["ECOR 1005", "SYSC-2001"])
-book(kevin, "Guide to Engineering", 10000, ["ECOR1010", "FOOB1234"], buyer="1")
+b = book(kevin, "ECOR 1010 Fun Facts", 100, ["ECOR1010"])
+sess.add(TBTBookChange(book=b, user=kevin, desc="added \n"+repr(b)))
+
+b = book(kevin, "C Programming Guide", 1000, ["ECOR 1005", "SYSC-2001"])
+sess.add(TBTBookChange(book=b, user=jane, desc="added \n"+repr(b)))
+
+b = book(john, "Guide to Engineering", 10000, ["ECOR1010", "FOOB1234"], buyer=kevin)
+sess.add(TBTBookChange(book=b, user=jane, desc="added \n"+repr(b)))
 
 sess.commit()
