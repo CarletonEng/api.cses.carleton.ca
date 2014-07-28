@@ -128,9 +128,23 @@ class stats(api.Handler):
 	@authrequired
 	@api.json_out
 	def GET(self):
+		if not "tbt" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":1, "msg":"You are not allowed to see the stats."}
 		
+		total = self.dbs.query(
+			db.func.count(TBTBook.price), db.func.sum(TBTBook.price)
+		)
+		sold = total.filter(TBTBook.buyer != None)
+		
+		b,  p  = total.one()
+		bs, ps = sold.one()
 		
 		return {"e":0,
+			"books": b,
+			"price": p/100,
+			"bookssold": bs,
+			"pricesold": ps/100,
 		}
 
 @api.app.route("/tbt/book/([^/]*)")
