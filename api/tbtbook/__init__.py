@@ -24,6 +24,7 @@
 #                                                                              #
 ################################################################################
 
+from datetime import datetime
 import re
 
 import api
@@ -67,6 +68,7 @@ class TBTBookChange(db.Base):
 	__tablename__ = "tbt-books-change"
 	
 	__id = db.Column("id", db.Hex, primary_key=True)
+	time = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now())
 	__userid = db.Column("user", db.ForeignKey("person.id"))
 	__bookid = db.Column("book", db.ForeignKey("tbt-books.id"))
 	

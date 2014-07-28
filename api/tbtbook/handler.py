@@ -114,7 +114,7 @@ class index(api.Handler):
 		            int(float(self.req.json["price"])*100),
 		            courses)
 		c = TBTBookChange(book=b,
-		                  desc="Created "+repr(b),
+		                  desc="created "+repr(b),
 		                  user=authorizer)
 		self.dbs.add(b, c)
 		self.dbs.commit()
@@ -133,7 +133,7 @@ class stats(api.Handler):
 		return {"e":0,
 		}
 
-@api.app.route("/tbt/book/(.*)")
+@api.app.route("/tbt/book/([^/]*)")
 class book(api.Handler):
 	@api.dbfetch(TBTBook)
 	@auth
@@ -159,7 +159,7 @@ class book(api.Handler):
 	def PUT(self, b):
 		if not "tbt" in self.req.auth.perms:
 			self.status_code = 403
-			return {"e":0, "msg": "You are not allowed."}
+			return {"e":1, "msg": "You are not allowed."}
 		
 		j = self.req.json
 		
@@ -177,3 +177,22 @@ class book(api.Handler):
 		
 		self.dbs.commit()
 		return {"e":0}
+
+@api.app.route("/tbt/book/([^/]*)/changes")
+class book(api.Handler):
+	@api.dbfetch(TBTBook)
+	@authrequired
+	@api.json_out
+	def GET(self, b):
+		if not "tbt" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":1, "msg":"You are not allowed to see changes."}
+		
+		return {"e":0,
+			"changes": [ {
+					"by":   c.user.id,
+					"time": c.time.timestamp(),
+					"desc": c.desc,
+				} for c in b.changes
+			],
+		}
