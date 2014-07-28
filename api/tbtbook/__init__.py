@@ -93,7 +93,7 @@ class TBTBook(db.Base):
 	                          backref=db.backref("book"))
 	
 	def __init__(self, seller, title, price, courses=(), **kwargs):
-		super().__init__(title=title, price=price, seller=seller)
+		super().__init__(title=title, price=price, seller=seller, **kwargs)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
