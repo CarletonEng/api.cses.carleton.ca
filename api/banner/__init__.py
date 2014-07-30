@@ -24,44 +24,57 @@
 #                                                                              #
 ################################################################################
 
-from urllib.parse import parse_qs
+from datetime import datetime
 
 import api
 from api import db
-from api.auth import auth
-from api.post import Post
 
-@api.app.route("/post")
-class index(api.Handler):
-	@api.dbs
-	@auth
-	@api.json_out
-	def GET(self):
-		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
-		
-		dbq = self.dbs.query(Post.id, Post.title)
-		
-		if "dir" in uq:
-			dbq = dbq.filter(Post.directory == uq["dir"][-1].rstrip("/"))
-		
-		return {"e":0,
-			"posts": [{"id":id, "title": title} for id, title in dbq],
-		}
+class BannerImage(db.Base):
+	""" An image for a banner.
+	"""
+	
+	__tablename__ = "banner_image"
+	
+	id     = db.Column(db.Hex, primary_key=True)
+	blob   = db.Column("blob", db.ForeignKey("blob.id"), nullable=False)
+	width  = db.Column(db.Integer, nullable=False)
+	height = db.Column(db.Integer, nullable=False)
+	
+	__bannerid = db.Column("banner", db.ForeignKey("banner.id"), nullable=False)
+	
+	@classmethod
+	def fits(w, h):
+		""" Select images that are large enough for the given device.
+			
+			Creates a filter expression that selects images that are large
+			enough to fit the given space (in pixels).
+		"""
+		return (BannerImage.width >= w) & (BannerImage.height >= h)
 
-@api.app.route("/post/(.*)")
-class person(api.Handler):
-	@api.dbfetch(Post, 1)
-	@auth
-	@api.json_out
-	def GET(self, p):
-		if "localhost" not in self.req.host:
-			# Cache for a day unless the dev server.
-			# ...or 3 on error.
-			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
+class Banner(db.Base):
+	""" A banner.
 		
-		return {"e":0,
-			"id":      p.id,
-			"type":    p.type,
-			"title":   p.title,
-			"content": p.content,
-		}
+		Instance Attributes:
+			id:
+				A string containing a unique hex ID representing the banner.
+			alt:
+				Alt text.
+	"""
+	
+	__tablename__ = "banner"
+	
+	id      = db.Column(db.Hex, primary_key=True)
+	alt     = db.Column(db.String)
+	added   = db.Column(db.DateTime, default=datetime.utcnow())
+	removed = db.Column(db.DateTime)
+	
+	images = db.relationship("BannerImage", cascade="all, delete-orphan",
+	                          backref=db.backref("banner"))
+	
+	@db.hybrid_property
+	def up(self):
+		now = datetime.utcnow()
+		return (self.added <= now) & ((now < self.removed) | (self.removed == None))
+	
+	def __repr__(self):
+		return api.autorepr(self, self.id, self.alt)

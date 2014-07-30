@@ -52,7 +52,7 @@ class CSPViolation(db.Base):
 	date       = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 	source     = db.Column(db.String)
 	useragent  = db.Column(db.String)
-	__reportid = db.Column("reportid", db.ForeignKey("csp-report.id"))
+	__reportid = db.Column("reportid", db.ForeignKey("csp_report.id"))
 	
 	def __init__(self, report, ua="not provided", ip="not provided"):
 		self.report = report
@@ -70,7 +70,7 @@ class CSPReport(db.Base):
 			violations:
 				The reports that sent this object.
 	"""
-	__tablename__ = "csp-report"
+	__tablename__ = "csp_report"
 	
 	id    = db.Column(db.Hex, primary_key=True)
 	data  = db.Column(db.JSON(sort=True), index=True, unique=True);

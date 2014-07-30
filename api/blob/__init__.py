@@ -44,7 +44,7 @@ class Blob(db.Base):
 				The mime type of the data.
 	"""
 	
-	__tablename__ = 'blobs'
+	__tablename__ = 'blob'
 	
 	id   = db.Column(db.HexLong, primary_key=True)
 	mime = db.Column(db.String, default=lambda:"application/octet-stream")

@@ -116,24 +116,26 @@ def dbs(f):
 	return w
 
 def dbfetch(klass, arg=1):
+	arg -= 1
 	def d(f):
 		@dbs
 		def w(self, *args):
+			args = list(args)
 			try:
-				p = self.dbs.query(klass).get(args[arg-1])
+				args[arg] = self.dbs.query(klass).get(args[arg-1])
 			except db.StatementError as e:
 				self.status_code = 400
 				self.content_type = "application/json; charset=utf-8"
 				self.data = '{"e":1,"msg":"Invalid ID"}\n'
 				return
 			
-			if not p:
+			if not args[arg]:
 				self.status_code = 404
 				self.content_type = "application/json; charset=utf-8"
 				self.data = '{"e":1,"msg":"Item does not exist."}\n'
 				return
 			
-			return f(self, p)
+			return f(self, *args)
 		return w
 	return d
 
@@ -222,6 +224,7 @@ app.catchall = Default
 
 import api.auth.handler
 
+import api.banner.handler
 import api.blob.handler
 import api.csp.handler
 import api.person.handler

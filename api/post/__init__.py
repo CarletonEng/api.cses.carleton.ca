@@ -44,7 +44,7 @@ class Post(db.Base):
 				that can view this post.
 	"""
 	
-	__tablename__ = 'posts'
+	__tablename__ = 'post'
 	
 	__id    = db.Column("id", db.String, primary_key=True)
 	__dir   = db.Column("dir", db.String, index=True)

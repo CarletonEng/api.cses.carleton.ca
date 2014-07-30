@@ -34,7 +34,7 @@ class Email(db.Base):
 	""" Email address.
 	"""
 	
-	__tablename__ = "person-email"
+	__tablename__ = "person_email"
 	
 	email    = db.Column(db.String, primary_key=True)
 	__userid = db.Column("userid", db.ForeignKey("person.id"), primary_key=True)

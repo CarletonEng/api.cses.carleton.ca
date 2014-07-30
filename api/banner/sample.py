@@ -24,44 +24,17 @@
 #                                                                              #
 ################################################################################
 
-from urllib.parse import parse_qs
+import api.db as db
+from api.banner import Banner, BannerImage
 
-import api
-from api import db
-from api.auth import auth
-from api.post import Post
+sess = db.Session()
 
-@api.app.route("/post")
-class index(api.Handler):
-	@api.dbs
-	@auth
-	@api.json_out
-	def GET(self):
-		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
-		
-		dbq = self.dbs.query(Post.id, Post.title)
-		
-		if "dir" in uq:
-			dbq = dbq.filter(Post.directory == uq["dir"][-1].rstrip("/"))
-		
-		return {"e":0,
-			"posts": [{"id":id, "title": title} for id, title in dbq],
-		}
+i = [
+	BannerImage(blob="BF263BDFE95CBD9101C3AE769B2F93A10AE576D6", width=619, height=183),
+	BannerImage(blob="12DC7B0D61D0943E0E862A55911ABA43619EA371", width=200, height=200),
+]
 
-@api.app.route("/post/(.*)")
-class person(api.Handler):
-	@api.dbfetch(Post, 1)
-	@auth
-	@api.json_out
-	def GET(self, p):
-		if "localhost" not in self.req.host:
-			# Cache for a day unless the dev server.
-			# ...or 3 on error.
-			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
-		
-		return {"e":0,
-			"id":      p.id,
-			"type":    p.type,
-			"title":   p.title,
-			"content": p.content,
-		}
+b = Banner(alt="CSES!", images=i)
+
+sess.add(b)
+sess.commit()

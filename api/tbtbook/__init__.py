@@ -55,22 +55,22 @@ class Course(db.Base):
 	""" A course.
 	"""
 	
-	__tablename__ = "tbt-book-course"
+	__tablename__ = "tbt_book_course"
 	
 	__id = db.Column("id", db.Integer, primary_key=True)
 	code = db.Column("code", CourseCode, index=True, nullable=False)
-	__bookid = db.Column("bookid", db.ForeignKey("tbt-books.id"))
+	__bookid = db.Column("bookid", db.ForeignKey("tbt_book.id"))
 	
 	def __init__(self, code, **kwargs):
 		super().__init__(code=code, *kwargs)
 
 class TBTBookChange(db.Base):
-	__tablename__ = "tbt-books-change"
+	__tablename__ = "tbt_book_change"
 	
 	__id = db.Column("id", db.Hex, primary_key=True)
-	time = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now())
+	time = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
 	__userid = db.Column("user", db.ForeignKey("person.id"))
-	__bookid = db.Column("book", db.ForeignKey("tbt-books.id"))
+	__bookid = db.Column("book", db.ForeignKey("tbt_book.id"))
 	
 	desc = db.Column(db.String, nullable=False)
 
@@ -78,7 +78,7 @@ class TBTBook(db.Base):
 	""" A book.
 	"""
 	
-	__tablename__ = "tbt-books"
+	__tablename__ = "tbt_book"
 	
 	id        = db.Column(db.Hex, primary_key=True)
 	title     = db.Column(db.String, nullable=False)

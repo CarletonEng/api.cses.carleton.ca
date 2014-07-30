@@ -46,5 +46,6 @@ blob("text/plain; charset=utf8", [b"Hello, I am a blob.\n"])
 
 
 file("image/png", "sample/cses.png")
+file("image/png", "sample/cses-small.png")
 
 sess.commit()
