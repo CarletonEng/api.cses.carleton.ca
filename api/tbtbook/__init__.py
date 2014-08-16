@@ -42,14 +42,20 @@ class CourseCode(db.TypeDecorator):
 	def __init__(self):
 		super().__init__(8)
 	
+	@staticmethod
+	def clean(code):
+		return CourseCode.CODE_STRIP.sub("", code.upper())
+	
 	def process_bind_param(self, value, dialect):
-		code = value.upper()
-		code = CourseCode.CODE_STRIP.sub("", code) # Arguments are backwards.
+		code = CourseCode.clean(value)
 		
 		if not CourseCode.CODE_VALID.fullmatch(code):
 			return None
 		
 		return code
+	
+	def coerce_compared_value(self, op, val):
+		return db.String()
 
 class Course(db.Base):
 	""" A course.

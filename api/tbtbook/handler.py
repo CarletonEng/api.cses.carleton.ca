@@ -30,7 +30,7 @@ import api
 from api import db
 from api.auth import auth, authrequired
 from api.person import Person
-from api.tbtbook import TBTBook, TBTBookChange, Course
+from api.tbtbook import TBTBook, TBTBookChange, Course, CourseCode
 
 @api.app.route("/tbt/book")
 class index(api.Handler):
@@ -47,7 +47,15 @@ class index(api.Handler):
 			q = q.filter(TBTBook.buyer == None)
 		
 		if "course" in uq:
-			q = q.join(Course).filter(Course.code == uq["course"][0])
+			c = CourseCode.clean(uq["course"][0])
+			print (c)
+			
+			if len(c) == 8:
+				p = Course.code == c
+			else:
+				p = Course.code.like(c+"%")
+			
+			q = q.join(Course).filter(p)
 		
 		if "title" in uq:
 			words = uq["title"][0].split(" ")
