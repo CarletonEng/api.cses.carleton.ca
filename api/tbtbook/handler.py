@@ -155,16 +155,22 @@ class book(api.Handler):
 	@api.cachemin
 	def GET(self, b):
 		
-		return {"e":0,
-			"id":      b.id,
+		r = {"e":0,
 			"title":   b.title,
 			"edition": b.edition,
 			"author":  b.author,
 			"price":   b.price/100,
 			"courses": [c.code for c in b.courses],
-			"seller":  b.seller.id,
-			"buyer":   b.buyer and b.buyer.id,
 		}
+		
+		if self.req.auth and  "tbt" in self.req.auth.perms:
+			r.update({
+				"paid": b.paid,
+				"seller":  b.seller.id,
+				"buyer":   b.buyer and b.buyer.id,
+			})
+		
+		return r;
 	
 	@api.dbfetch(TBTBook)
 	@authrequired
