@@ -29,12 +29,13 @@ from api.banner import Banner, BannerImage
 
 sess = db.Session()
 
-i = [
+sess.add(Banner(alt="CSES!", images=[
 	BannerImage(blob="BF263BDFE95CBD9101C3AE769B2F93A10AE576D6", width=619, height=183),
 	BannerImage(blob="12DC7B0D61D0943E0E862A55911ABA43619EA371", width=200, height=200),
-]
+]))
 
-b = Banner(alt="CSES!", images=i)
+sess.add(Banner(alt="Summer Directorship Applications Now Open", images=[
+	BannerImage(blob="B963C4AEE97D58F264B62E5F61E7829DEA94332F", width=647, height=253),
+]))
 
-sess.add(b)
 sess.commit()

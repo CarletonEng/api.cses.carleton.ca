@@ -36,6 +36,9 @@ class index(api.Handler):
 	@api.dbs
 	@api.json_out
 	def GET(self):
+		banners = (self.dbs.query(Banner)
+		                   .filter(Banner.up)
+		                   .order_by(Banner.added))
 		return {"e":0,
 			"banners": [
 				{
@@ -45,8 +48,6 @@ class index(api.Handler):
 							"w": i.width, "h": i.height,
 						} for i in b.images
 					]
-				} for b in self.dbs.query(Banner)
-				                   .filter(Banner.up)
-				                   .order_by(Banner.added)
-			],
+				} for b in banners
+			]
 		}
