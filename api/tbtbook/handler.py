@@ -148,12 +148,14 @@ class book(api.Handler):
 	def GET(self, b):
 		
 		return {"e":0,
-			"id":  b.id,
-			"title": b.title,
-			"price": b.price/100,
+			"id":      b.id,
+			"title":   b.title,
+			"edition": b.edition,
+			"author":  b.author,
+			"price":   b.price/100,
 			"courses": [c.code for c in b.courses],
-			"seller": b.seller.id,
-			"buyer": b.buyer and b.buyer.id,
+			"seller":  b.seller.id,
+			"buyer":   b.buyer and b.buyer.id,
 		}
 	
 	@api.dbfetch(TBTBook)

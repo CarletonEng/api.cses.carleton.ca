@@ -82,6 +82,8 @@ class TBTBook(db.Base):
 	
 	id        = db.Column(db.Hex, primary_key=True)
 	title     = db.Column(db.String, nullable=False)
+	author    = db.Column(db.String, nullable=False)
+	edition   = db.Column(db.String, default="1st")
 	price     = db.Column(db.Integer, nullable=False)
 	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"))
 	_sellerid = db.Column("seller", db.ForeignKey("person.id"))
@@ -92,14 +94,20 @@ class TBTBook(db.Base):
 	changes = db.relationship("TBTBookChange", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
-	def __init__(self, seller, title, price, courses=(), **kwargs):
-		super().__init__(title=title, price=price, seller=seller, **kwargs)
+	def __init__(self, seller, title, author, price, courses=(), **kwargs):
+		super().__init__(title=title,
+		                 author=author,
+		                 price=price,
+		                 seller=seller,
+		                 **kwargs)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
 	def __repr__(self):
 		return api.autorepr(self, self.id,
 		                    title=self.title,
+		                    edition=self.edition,
+		                    author=self.author,
 		                    price=self.price,
 		                    buyer=self.buyer,
 		                    seller=self.seller)
