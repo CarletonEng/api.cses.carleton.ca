@@ -36,6 +36,7 @@ class index(api.Handler):
 	@auth
 	@api.json_out
 	@api.dbs
+	@api.cachemin
 	def GET(self):
 		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
 		
@@ -115,6 +116,7 @@ class person(api.Handler):
 	@api.dbfetch(Person)
 	@auth
 	@api.json_out
+	@api.cachehour
 	def GET(self, p):
 		all = ( self.req.auth and (
 			"personr" in self.req.auth.perms or

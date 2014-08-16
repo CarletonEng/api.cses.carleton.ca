@@ -35,6 +35,8 @@ from api.banner import Banner, BannerImage
 class index(api.Handler):
 	@api.dbs
 	@api.json_out
+	# Seeing a slightly old banner is no big deal but we want it to load fast.
+	@api.cache(60*5, 3600*24, 3600*24*14)
 	def GET(self):
 		banners = (self.dbs.query(Banner)
 		                   .filter(Banner.up)

@@ -36,6 +36,7 @@ class index(api.Handler):
 	@api.dbs
 	@auth
 	@api.json_out
+	@api.cachehour
 	def GET(self):
 		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
 		
@@ -53,12 +54,8 @@ class person(api.Handler):
 	@api.dbfetch(Post, 1)
 	@auth
 	@api.json_out
+	@api.cacheday
 	def GET(self, p):
-		if "localhost" not in self.req.host:
-			# Cache for a day unless the dev server.
-			# ...or 3 on error.
-			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
-		
 		return {"e":0,
 			"id":      p.id,
 			"type":    p.type,

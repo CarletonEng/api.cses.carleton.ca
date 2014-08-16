@@ -35,6 +35,7 @@ class index(api.Handler):
 	@api.dbs
 	@api.auth.authrequired
 	@api.json_out
+	@api.cacheday
 	def GET(self):
 		return {"e":0,
 			"perms": self.req.auth.perms,

@@ -206,15 +206,37 @@ def json_io(f):
 		self.data = tojson(r)
 	return w
 
+def cache(sec, stale=0, error=0):
+	""" Wrapper to set cache parameters.
+	"""
+	cc = "max-age={},stale-while-revalidate={},stale-if-error={}".format(sec, stale, error)
+	
+	# Don't cache when debugging.
+	if app.config.debug:
+		cc = "no-cache"
+	
+	def d(f):
+		def w(self, *args):
+			self.headers["Cache-Control"] = cc
+			return f(self, *args)
+		return w
+	return d
+
+cachemin     = cache(60*3, 60, 60*15)
+cachehour    = cache(3600, 3600, 3600*4)
+cacheday     = cache(3600*24, 3600*3, 3600*24)
+cacheforever = cache(3600*365, 3600*365, 3600*365)
+
 @app.route("/")
 class index(framework.Handler):
+	@cacheforever
 	def GET(self):
-		self.headers["Cache-Control"] = "max-age=31536000,stale-while-revalidate=31536000"
 		self.content_type = "text/plain; charset=utf-8"
 		self.data = "This is the API, go away.\n"
 
 class Default(Handler):
 	@json_out
+	@cachehour
 	def default(self):
 		self.status_code = 404
 		return {"e": 404,
@@ -230,3 +252,7 @@ import api.csp.handler
 import api.person.handler
 import api.post.handler
 import api.tbtbook.handler
+
+# Force evaluation of relationships.
+from api.person import Person
+Person()

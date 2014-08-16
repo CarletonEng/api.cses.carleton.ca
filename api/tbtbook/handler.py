@@ -37,10 +37,11 @@ class index(api.Handler):
 	@api.dbs
 	@auth
 	@api.json_out
+	@api.cachemin
 	def GET(self):
 		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
 		
-		q = self.dbs.query(TBTBook)
+		q = self.dbs.query(TBTBook.id)
 		
 		if "sold" not in uq:
 			q = q.filter(TBTBook.buyer == None)
@@ -57,17 +58,7 @@ class index(api.Handler):
 			q = q.filter(*(TBTBook.title.ilike("%"+t+"%") for t in words))
 		
 		return {"e":0,
-			"books": [{
-				"id": b.id,
-				"title": b.title,
-				"price": b.price/100,
-				"courses": [c.code for c in b.courses],
-				"seller": {
-					"id": b.seller.id,
-					"name": b.seller.name,
-				},
-				"buyer": b.buyer and b.buyer.id
-			} for b in q],
+			"books": [r[0] for r in q],
 		}
 	
 	@api.dbs
@@ -127,6 +118,7 @@ class index(api.Handler):
 class stats(api.Handler):
 	@authrequired
 	@api.json_out
+	@api.cachemin
 	def GET(self):
 		if not "tbt" in self.req.auth.perms:
 			self.status_code = 403
@@ -152,11 +144,8 @@ class book(api.Handler):
 	@api.dbfetch(TBTBook)
 	@auth
 	@api.json_out
+	@api.cachemin
 	def GET(self, b):
-		if not self.app.config.debug:
-			# Cache for a day unless the dev server.
-			# ...or 3 on error.
-			self.headers["Cache-Control"] = "max-age=86400,stale-if-error=259200"
 		
 		return {"e":0,
 			"id":  b.id,
@@ -211,6 +200,7 @@ class book(api.Handler):
 	@api.dbfetch(TBTBook)
 	@authrequired
 	@api.json_out
+	@api.cachemin
 	def GET(self, b):
 		if not "tbt" in self.req.auth.perms:
 			self.status_code = 403
