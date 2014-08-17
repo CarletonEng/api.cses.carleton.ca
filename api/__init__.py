@@ -27,6 +27,7 @@
 import re
 import json
 import os.path
+import traceback
 
 from api import framework
 from api.config import Config
@@ -77,8 +78,22 @@ class Handler(framework.Handler):
 		overhead to the request.  The features are documented below.
 		
 		CORS:
-			This function controls CORS.  By default it allows from
+			This function controls CORS.  By default it allows from selected origins.
+		Error control:
+			Catches and logs errors.
 	"""
+	def __init__(self, app, req, *args):
+		try:
+			super().__init__(app, req, *args)
+		except:
+			print("-"*60)
+			print("Exception handling {} {}".format(req.method, req.path))
+			traceback.print_exc()
+			print("-"*60)
+			
+			self.status_code = 500
+			self.data = '{"e":500,"msg":"Internal Server Error."}\n'
+	
 	def before(self):
 		if (getattr(self.__class__, "origin_any", False) or
 		    originre.match(self.req.headers.get("Origin", ""))):
@@ -164,8 +179,10 @@ def tojson(o):
 		j = json.dumps(o, separators=(",",":"))
 	
 	j = j+"\n"
+	
 	if app.config.debug:
 		print(j)
+		
 	return j
 
 def json_out(f):
