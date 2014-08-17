@@ -44,6 +44,7 @@ class index(api.Handler):
 		return {"e":0,
 			"banners": [
 				{
+					"href": b.href,
 					"alt": b.alt,
 					"images": [{
 							"blob": i.blob,
