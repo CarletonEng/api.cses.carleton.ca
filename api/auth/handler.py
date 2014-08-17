@@ -27,7 +27,7 @@
 import api
 from api import db
 
-from api.person import Person
+from api.person import Person, Email
 from api.auth import Auth
 
 @api.app.route("/auth")
@@ -35,7 +35,7 @@ class index(api.Handler):
 	@api.dbs
 	@api.auth.authrequired
 	@api.json_out
-	@api.cacheday
+	@api.cachehour
 	def GET(self):
 		return {"e":0,
 			"perms": self.req.auth.perms,
@@ -55,7 +55,11 @@ class index(api.Handler):
 			self.status_code = 400
 			return {"e":1, "msg":"No password provided."}
 		
-		p = s.query(Person).get(j["user"])
+		if "@" in j["user"]:
+			p = s.query(Person).join(Email).filter_by(email=j["user"]).scalar()
+		else:
+			p = s.query(Person).get(j["user"])
+		
 		if not p or not p.password_check(j["pass"]):
 			self.status_code = 403
 			return {"e":1, "msg":"Invalid credentials."}

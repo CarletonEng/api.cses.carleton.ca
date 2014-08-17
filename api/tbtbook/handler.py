@@ -208,6 +208,22 @@ class book(api.Handler):
 			                  desc="sold book to \n"+repr(buyer),
 			                  user=authorizer)
 		
+		if "paid" in j:
+			if not b.buyer:
+				self.status_code = 400
+				return {"e":1, "msg":"Can't sell a book without a buyer."}
+			if not j["paid"]:
+				self.status_code = 400
+				return {"e":1, "msg":"Can't unpay a seller."}
+			if b.paid:
+				self.status_code = 409
+				return {"e":1, "msg":"Seller has already been paid."}
+			
+			b.paid = True
+			c = TBTBookChange(book=b,
+			                  desc="paid buyer:\n"+repr(b.buyer),
+			                  user=authorizer)
+		
 		self.dbs.commit()
 		return {"e":0}
 
