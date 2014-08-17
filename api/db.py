@@ -58,7 +58,8 @@ class Hex(TypeDecorator):
 	impl = Integer
 	
 	def process_bind_param(self, value, dialect):
-		return int(value, 16) if value is not None else None
+		try:    return int(value, 16) if value is not None else None
+		except: return None
 	
 	def process_result_value(self, value, dialect):
 		return format(int(value), "X") if value is not None else None
@@ -83,7 +84,8 @@ class HexLong(TypeDecorator):
 		if len(value) % 2:
 			value = "0"+value
 		
-		return unhexlify(value)
+		try:    return unhexlify(value)
+		except: return None
 	
 	def process_result_value(self, value, dialect):
 		return hexlify(value).decode().upper()
