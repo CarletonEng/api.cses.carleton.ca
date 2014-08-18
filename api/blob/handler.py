@@ -46,15 +46,8 @@ class index(api.Handler):
 			self.status_code = 403
 			return {"e":1, "msg": "You can't upload."}
 		
-		def chunked(s):
-			chunksize = 4*1024*1024
-			d = s.read(chunksize)
-			while d:
-				yield d
-				d = s.read(chunksize)
-		
 		b = Blob(mime=self.req.mimetype)
-		b.write(chunked(self.req.stream))
+		b.writestream(self.req.stream)
 		
 		new = True
 		sb = self.dbs.query(Blob).get(b.id)
@@ -96,12 +89,16 @@ def blob(app, req, id):
 				])
 				return r,
 			
-			start_response("200 OK", [
+			h = [
 				("Content-Type", b.mime),
 				("Content-Length", str(b.size)),
 				("ETag", '"'+b.id+'"'),
 				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
-			])
+			]
+			if b.enc:
+				h.append(("Content-Encoding", b.enc))
+			
+			start_response("200 OK", h)
 			return wrap_file(env, b.open())
 		finally:
 			sess.close()
