@@ -28,7 +28,7 @@ from urllib.parse import parse_qs
 
 import api
 from api import db
-from api.auth import auth
+from api.auth import auth, authrequired
 from api.post import Post
 
 @api.app.route("/post")
@@ -61,4 +61,27 @@ class person(api.Handler):
 			"type":    p.type,
 			"title":   p.title,
 			"content": p.content,
+		}
+	
+	@authrequired
+	@api.json_io
+	def PUT(self, path):
+		if not "postw" in self.req.auth.perms:
+			return {"e":1,"msg":"You can't edit posts."}
+		
+		new = False
+		p = self.dbs.query(Post).get(path)
+		if not p:
+			new = True
+			p = Post(id=path)
+			self.dbs.add(p)
+		
+		j = self.req.json
+		
+		if "content" in j:
+			p.content = j["content"]
+		
+		self.dbs.commit()
+		return {"e":0,
+			"new": new,
 		}
