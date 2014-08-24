@@ -28,6 +28,8 @@ import os, shutil
 
 os.environ["CSESAPI_DEBUG"] = "TRUE"
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 import api
 from api import app, db
 
