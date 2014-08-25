@@ -83,6 +83,9 @@ class index(api.Handler):
 		if not "title" in self.req.json:
 			self.status_code = 400
 			return {"e":1, "msg": "Missing Title."}
+		if not "author" in self.req.json:
+			self.status_code = 400
+			return {"e":1, "msg": "Missing Author."}
 		if not "price" in self.req.json:
 			self.status_code = 400
 			return {"e":1, "msg": "Missing Price."}
@@ -108,10 +111,11 @@ class index(api.Handler):
 		
 		courses = [Course(c) for c in self.req.json["courses"]]
 		
-		b = TBTBook(seller,
-		            self.req.json["title"],
-		            int(float(self.req.json["price"])*100),
-		            courses)
+		b = TBTBook(seller=seller,
+		            title=self.req.json["title"],
+		            author=self.req.json["author"],
+		            price=int(float(self.req.json["price"])*100),
+		            courses=courses)
 		c = TBTBookChange(book=b,
 		                  desc="created\n"+repr(b),
 		                  user=authorizer)
@@ -225,7 +229,9 @@ class book(api.Handler):
 			                  user=authorizer)
 		
 		self.dbs.commit()
-		return {"e":0}
+		return {"e":0,
+			"id": b.id,
+		}
 
 @api.app.route("/tbt/book/([^/]*)/changes")
 class book(api.Handler):

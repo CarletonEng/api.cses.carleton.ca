@@ -30,8 +30,13 @@ from api.tbtbook import TBTBook, TBTBookChange, Course
 
 sess = db.Session()
 
-def book(owner, title, author, price, courses, buyer=None, **kwargs):
-	b = TBTBook(owner, title, author, price, courses, buyer=buyer, **kwargs)
+def book(owner, title, author, price, courses, **kwargs):
+	b = TBTBook(seller=owner,
+	            title=title,
+	            author=author,
+	            price=price,
+	            courses=courses,
+	            **kwargs)
 	sess.add(b)
 	return b
 

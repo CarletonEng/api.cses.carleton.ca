@@ -101,12 +101,8 @@ class TBTBook(db.Base):
 	changes = db.relationship("TBTBookChange", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))
 	
-	def __init__(self, seller, title, author, price, courses=(), **kwargs):
-		super().__init__(title=title,
-		                 author=author,
-		                 price=price,
-		                 seller=seller,
-		                 **kwargs)
+	def __init__(self, *, courses=[], **kwargs):
+		super().__init__(**kwargs)
 		
 		self.courses = [c if isinstance(c, Course) else Course(c) for c in courses]
 	
