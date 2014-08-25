@@ -78,6 +78,8 @@ class person(api.Handler):
 		
 		j = self.req.json
 		
+		if "title" in j:
+			p.title = j["title"]
 		if "content" in j:
 			p.content = j["content"]
 		
