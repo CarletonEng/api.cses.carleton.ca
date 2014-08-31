@@ -58,6 +58,8 @@ class Handler(werkzeug.wrappers.Response):
 		"""
 		super().__init__()
 		
+		self.headers["Vary"] = ""
+		
 		self.app = app
 		self.req = req
 		
@@ -65,6 +67,8 @@ class Handler(werkzeug.wrappers.Response):
 		f = getattr(self, self.req.method.upper(), self.default)
 		r = f(*args)
 		self.after(r)
+		
+		self.headers["Vary"] = self.headers["Vary"][1:]
 	
 	def before(self):
 		""" Setup

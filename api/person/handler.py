@@ -72,6 +72,7 @@ class index(api.Handler):
 			} for p in q]
 		}
 	
+	@api.cachenostore
 	@authrequired
 	@api.json_io
 	@api.dbs
@@ -140,6 +141,7 @@ class person(api.Handler):
 		
 		return r
 	
+	@api.cachenostore
 	@api.dbfetch(Person)
 	@auth
 	@api.json_io

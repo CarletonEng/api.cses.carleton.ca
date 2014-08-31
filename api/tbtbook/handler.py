@@ -35,7 +35,6 @@ from api.tbtbook import TBTBook, TBTBookChange, Course, CourseCode
 @api.app.route("/tbt/book")
 class index(api.Handler):
 	@api.dbs
-	@auth
 	@api.json_out
 	@api.cachemin
 	def GET(self):
@@ -69,6 +68,7 @@ class index(api.Handler):
 			"books": [r[0] for r in q],
 		}
 	
+	@api.cachenostore
 	@api.dbs
 	@auth
 	@api.json_io
@@ -128,9 +128,9 @@ class index(api.Handler):
 
 @api.app.route("/tbt/book/stats")
 class stats(api.Handler):
+	@api.cachemin
 	@authrequired
 	@api.json_out
-	@api.cachemin
 	def GET(self):
 		if not "tbt" in self.req.auth.perms:
 			self.status_code = 403
@@ -167,7 +167,7 @@ class book(api.Handler):
 			"courses": [c.code for c in b.courses],
 		}
 		
-		if self.req.auth and  "tbt" in self.req.auth.perms:
+		if self.req.auth and "tbt" in self.req.auth.perms:
 			r.update({
 				"paid": b.paid,
 				"seller":  b.seller.id,

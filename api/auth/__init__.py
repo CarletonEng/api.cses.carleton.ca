@@ -147,6 +147,12 @@ def auth(f):
 			method, _, token = ah.partition(" ")
 			if method == "Bearer":
 				self.req.auth = Auth.fromtoken(self.dbs, token)
+			
+			# We don't want caches keeping requests with auth strings.
+			if hasattr(self, "cache") and self.cache.type == "public":
+				self.cache.type = "private"
+		
+		self.headers["Vary"] += ",Authorization"
 		
 		return f(self, *args)
 	return w

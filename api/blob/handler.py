@@ -74,7 +74,7 @@ def blob(app, req, id):
 		# Handle ETags.
 		if env.get("HTTP_IF_NONE_MATCH", "") == '"'+id+'"':
 			start_response("304 NOT MODIFIED", [
-				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
+				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
 			])
 			return ()
 		
@@ -93,7 +93,7 @@ def blob(app, req, id):
 				("Content-Type", b.mime),
 				("Content-Length", str(b.size)),
 				("ETag", '"'+b.id+'"'),
-				("Cache-Control", "no-cache" if app.config.debug else "max-age=31536000")
+				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
 			]
 			if b.enc:
 				h.append(("Content-Encoding", b.enc))

@@ -223,22 +223,48 @@ def json_io(f):
 		self.data = tojson(r)
 	return w
 
-def cache(sec, stale=0, error=0):
+class CacheOptions:
+	def __init__(self, sec, stale=None, error=None, type="public"):
+		self.seconds = sec
+		self.stale   = stale
+		self.error   = error
+		self.type    = type
+		self.more    = []
+	def __str__(self):
+		r = [self.type, "max-age="+str(self.seconds)]
+		
+		if self.stale is not None:
+			r.append("stale-while-revalidate="+str(self.stale))
+		if self.error is not None:
+			r.append("stale-if-error="+str(self.error))
+		r.extend(self.more)
+		
+		return ",".join(r)
+
+def cache(sec, *cacheargs, **cachekwargs):
 	""" Wrapper to set cache parameters.
 	"""
-	cc = "max-age={},stale-while-revalidate={},stale-if-error={}".format(sec, stale, error)
-	
-	# Don't cache when debugging.
-	if app.config.debug:
-		cc = "no-cache"
 	
 	def d(f):
 		def w(self, *args):
-			self.headers["Cache-Control"] = cc
-			return f(self, *args)
+			self.cache = CacheOptions(sec, *cacheargs, **cachekwargs)
+			
+			r = f(self, *args)
+			
+			# Don't cache when debugging.
+			if app.config.debug:
+				self.headers["Cache-Control"] = "no-cache"
+			else:
+				self.headers["Cache-Control"] = str(self.cache)
+				if self.cache.type == "no-cache" or self.cache.type == "no-store":
+					self.headers["Pragma"] = "no-cache"
+			
+			return r
 		return w
 	return d
 
+cachenocache = cache(0, type="no-cache")
+cachenostore = cache(0, type="no-store")
 cachemin     = cache(60*3, 60, 60*15)
 cachehour    = cache(3600, 3600, 3600*4)
 cacheday     = cache(3600*24, 3600*3, 3600*24)

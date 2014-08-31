@@ -33,15 +33,16 @@ from api.auth import Auth
 @api.app.route("/auth")
 class index(api.Handler):
 	@api.dbs
+	@api.cachehour
 	@api.auth.authrequired
 	@api.json_out
-	@api.cachehour
 	def GET(self):
 		return {"e":0,
 			"perms": self.req.auth.perms,
 			"user": self.req.auth.user.id,
 		}
 	
+	@api.cachenostore
 	@api.json_io
 	@api.dbs
 	def POST(self):
@@ -79,6 +80,7 @@ class index(api.Handler):
 
 @api.app.route("/auth/invalidate")
 class index(api.Handler):
+	@api.cachenostore
 	@api.dbs
 	@api.auth.authrequired
 	@api.json_out
