@@ -102,3 +102,8 @@ class JSON(TypeDecorator):
 	
 	def process_result_value(self, value, dialect):
 		return value and json.loads(value)
+
+class ListSorted(JSON):
+	def process_bind_param(self, value, dialect):
+		value.sort()
+		return super().process_bind_param(value, dialect)

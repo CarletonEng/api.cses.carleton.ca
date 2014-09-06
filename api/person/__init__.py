@@ -64,7 +64,7 @@ class Person(db.Base):
 	name     = db.Column(db.String, nullable=False)
 	namefull = db.Column(db.String, nullable=False)
 	__pw     = db.Column("pw", db.String, server_default="!")
-	perms    = db.Column(db.JSON, default=lambda:["selfr", "selfw"])
+	perms    = db.Column(db.ListSorted, default=lambda:["selfr", "selfw"])
 	
 	emails = db.relationship(Email, cascade="all, delete-orphan",
 	                         backref=db.backref("user", lazy="joined"))

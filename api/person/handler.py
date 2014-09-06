@@ -148,10 +148,23 @@ class person(api.Handler):
 	def PUT(self, p):
 		j = self.req.json
 		
+		if not (
+			"personw" in self.req.auth.perms or (
+				"selfw" in self.req.auth.perms and self.req.auth.user == p
+			)
+		):
+			self.status_code = 403
+			return {"e":1, "msg":"You can't modify this person."}
+		
 		if "name" in j:
 			p.name = j["name"]
 		if "namefull" in j:
 			p.namefull = j["namefull"]
+		if "perms" in j and j["perms"] != p.perms:
+			if "personw" not in self.req.auth.perms:
+				self.status_code = 403
+				return {"e":1,"msg": "You aren't allowed to do that."}
+			p.perms = j["perms"]
 		
 		self.dbs.commit()
 		return {"e":0}
