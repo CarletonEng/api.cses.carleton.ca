@@ -89,7 +89,7 @@ class TBTBook(db.Base):
 	id        = db.Column(db.Hex, primary_key=True)
 	title     = db.Column(db.String, nullable=False)
 	author    = db.Column(db.String, nullable=False)
-	edition   = db.Column(db.String, default="1st")
+	edition   = db.Column(db.String, default="")
 	price     = db.Column(db.Integer, nullable=False)
 	paid      = db.Column(db.Boolean, default=False)
 	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"))

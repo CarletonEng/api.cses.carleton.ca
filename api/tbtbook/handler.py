@@ -116,6 +116,10 @@ class index(api.Handler):
 		            author=self.req.json["author"],
 		            price=int(float(self.req.json["price"])*100),
 		            courses=courses)
+		
+		if "edition" in self.req.json:
+			b.edition = str(self.req.json["edition"])
+		
 		c = TBTBookChange(book=b,
 		                  desc="created\n"+repr(b),
 		                  user=authorizer)
