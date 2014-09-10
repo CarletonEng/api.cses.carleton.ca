@@ -140,15 +140,19 @@ class stats(api.Handler):
 			db.func.count(TBTBook.price), db.func.sum(TBTBook.price)
 		)
 		sold = total.filter(TBTBook.buyer != None)
+		paid = total.filter(TBTBook.paid == True)
 		
 		b,  p  = total.one()
 		bs, ps = sold.one()
+		bp, pp = sold.one()
 		
 		return {"e":0,
 			"books": b,
 			"price": p/100,
 			"bookssold": bs,
 			"pricesold": ps/100,
+			"bookspaid": bp,
+			"pricepaid": pp/100,
 		}
 
 @api.app.route("/tbt/book/([^/]*)")
