@@ -236,6 +236,20 @@ class book(api.Handler):
 		return {"e":0,
 			"id": b.id,
 		}
+	
+	@api.dbfetch(TBTBook)
+	@authrequired
+	@api.json_out
+	def DELETE(self, b):
+		if not "tbt" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":1, "msg": "You are not allowed."}
+		
+		print("Deleting", repr(b))
+		self.dbs.delete(b)
+		self.dbs.commit()
+		
+		return {"e":0}
 
 @api.app.route("/tbt/book/([^/]*)/changes")
 class book(api.Handler):
