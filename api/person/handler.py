@@ -31,8 +31,20 @@ from api import db
 from api.person import Person, Email
 from api.auth import Auth, auth, authrequired
 
+class HandlerPerson(api.Handler):
+	def canwrite(self, p):
+		if not self.req.auth:
+			return False
+		
+		if "personr" in self.req.auth.perms:
+			return True
+		if self.req.auth.user == p and "selfr" in self.req.auth:
+			return True
+		
+		return False
+
 @api.app.route("/person")
-class index(api.Handler):
+class index(HandlerPerson):
 	@auth
 	@api.json_out
 	@api.dbs
@@ -113,16 +125,13 @@ class index(api.Handler):
 		}
 
 @api.app.route("/person/([^/]*)")
-class person(api.Handler):
+class person(HandlerPerson):
 	@api.dbfetch(Person)
 	@auth
 	@api.json_out
 	@api.cachehour
 	def GET(self, p):
-		all = ( self.req.auth and (
-			"personr" in self.req.auth.perms or
-			self.req.auth.user == p and "selfr" in self.req.auth.perms
-		))
+		all = self.canwrite(p)
 		
 		r = {"e":0,
 			"id":       p.id,
@@ -148,11 +157,7 @@ class person(api.Handler):
 	def PUT(self, p):
 		j = self.req.json
 		
-		if not (
-			"personw" in self.req.auth.perms or (
-				"selfw" in self.req.auth.perms and self.req.auth.user == p
-			)
-		):
+		if not self.canwrite(p):
 			self.status_code = 403
 			return {"e":1, "msg":"You can't modify this person."}
 		
@@ -167,4 +172,31 @@ class person(api.Handler):
 			p.perms = j["perms"]
 		
 		self.dbs.commit()
+		return {"e":0}
+
+@api.app.route("/person/([^/]*)/pass")
+class person(HandlerPerson):
+	@api.dbfetch(Person)
+	@authrequired
+	@api.json_io
+	def PUT(self, p):
+		j = self.req.json
+		
+		if not self.canwrite(p):
+			self.status_code = 403
+			return {"e":1, "msg":"You can't modify this person."}
+		
+		if not "pass" in j:
+			self.status_code = 400
+			return {"e":1, "msg":"You must provide a new password."}
+		
+		p.password_set(j["pass"])
+		
+		# Delete existing sessions (except this one).
+		for a in p.auths:
+			if a != self.req.auth:
+				self.dbs.delete(a)
+		
+		self.dbs.commit()
+		
 		return {"e":0}
