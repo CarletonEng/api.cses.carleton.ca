@@ -38,7 +38,7 @@ class HandlerPerson(api.Handler):
 		
 		if "personr" in self.req.auth.perms:
 			return True
-		if self.req.auth.user == p and "selfr" in self.req.auth:
+		if self.req.auth.user == p and "selfr" in self.req.auth.perms:
 			return True
 		
 		return False
