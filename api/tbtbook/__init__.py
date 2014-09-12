@@ -46,10 +46,18 @@ class CourseCode(db.TypeDecorator):
 	def clean(code):
 		return CourseCode.CODE_STRIP.sub("", code.upper())
 	
+	@staticmethod
+	def raw_valid(code):
+		return CourseCode.CODE_VALID.fullmatch(code)
+	
+	@staticmethod
+	def valid(code):
+		return CourseCode.raw_valid(CourseCode.clean(code))
+	
 	def process_bind_param(self, value, dialect):
 		code = CourseCode.clean(value)
 		
-		if not CourseCode.CODE_VALID.fullmatch(code):
+		if not CourseCode.raw_valid(code):
 			return None
 		
 		return code
@@ -69,6 +77,9 @@ class Course(db.Base):
 	
 	def __init__(self, code, **kwargs):
 		super().__init__(code=code, *kwargs)
+	
+	def __repr__(self):
+		return repr(self.code)
 
 class TBTBookChange(db.Base):
 	__tablename__ = "tbt_book_change"

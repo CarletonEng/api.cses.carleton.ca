@@ -111,7 +111,14 @@ class index(api.Handler):
 			self.status_code = 400
 			return {"e":1, "msg": "Seller does not exist."}
 		
-		courses = [Course(c) for c in self.req.json["courses"]]
+		courses = []
+		
+		for c in self.req.json["courses"]:
+			if not CourseCode.valid(c):
+				self.status_code = 400
+				return {"e":1, "msg":"Invalid course code '"+c+"'."}
+			
+			courses.append(Course(c))
 		
 		b = TBTBook(seller=seller,
 		            title=self.req.json["title"],
