@@ -178,7 +178,7 @@ class person(HandlerPerson):
 				self.dbs.delete(a)
 		
 		self.dbs.commit()
-		return {"e":0}
+		return {"e":0, "id":p.id}
 
 @api.app.route("/person/([^/]*)/pass")
 class person(HandlerPerson):
