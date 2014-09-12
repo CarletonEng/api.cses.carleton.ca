@@ -150,6 +150,12 @@ class stats(api.Handler):
 		bs, ps = sold.one()
 		bp, pp = sold.one()
 		
+		# A sum of no elements is None, not 0
+		
+		p  = p  or 0
+		ps = ps or 0
+		pp = pp or 0
+		
 		return {"e":0,
 			"books": b,
 			"price": p/100,
