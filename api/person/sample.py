@@ -44,5 +44,6 @@ sess.add(Email(user=k, email="kevincox@kevincox.ca"))
 person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw","tbt"])
 person(999111111, "John", "John Doe", "password1", ["selfr","selfw","postw"])
 person(999222222, "Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])
+person(999222232, "Support", "Support desk", "5", ["selfr","selfw","personr","personw"])
 
 sess.commit()

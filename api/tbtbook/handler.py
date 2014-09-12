@@ -64,6 +64,8 @@ class index(api.Handler):
 			
 			q = q.filter(*(TBTBook.title.ilike("%"+t+"%") for t in words))
 		
+		q = q.group_by(TBTBook.id)
+		
 		return {"e":0,
 			"books": [r[0] for r in q],
 		}
