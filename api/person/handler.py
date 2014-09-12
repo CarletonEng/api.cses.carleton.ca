@@ -166,7 +166,7 @@ class person(HandlerPerson):
 		if "namefull" in j:
 			p.namefull = j["namefull"]
 		if "perms" in j and j["perms"] != p.perms:
-			if "personw" not in self.req.auth.perms:
+			if "wheel" not in self.req.auth.perms:
 				self.status_code = 403
 				return {"e":1,"msg": "You aren't allowed to do that."}
 			p.perms = j["perms"]
@@ -185,6 +185,10 @@ class person(HandlerPerson):
 		if not self.canwrite(p):
 			self.status_code = 403
 			return {"e":1, "msg":"You can't modify this person."}
+		
+		if "wheel" in p.perms and "wheel" not in self.req.auth.perms:
+			self.status_code = 403
+			return {"e":1, "msg":"Only an admin can modify this user's password."}
 		
 		if not "pass" in j:
 			self.status_code = 400
