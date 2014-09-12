@@ -39,7 +39,7 @@ def person(id, name, full, pw, perms):
 	return p
 
 k = person(999123456, "Kevin", "Kevin Cox", "passwd",
-           ["selfw","selfr","personr","personw","upload","tbt","postw"])
+           ["selfw","selfr","personr","personw","upload","tbt","postw","wheel"])
 sess.add(Email(user=k, email="kevincox@kevincox.ca"))
 person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw","tbt"])
 person(999111111, "John", "John Doe", "password1", ["selfr","selfw","postw"])
