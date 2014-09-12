@@ -169,7 +169,13 @@ class person(HandlerPerson):
 			if "wheel" not in self.req.auth.perms:
 				self.status_code = 403
 				return {"e":1,"msg": "You aren't allowed to do that."}
+			
 			p.perms = j["perms"]
+			
+			# Delete existing sessions.
+			# self.dbs.query(Auth).filter(Auth.user == p).delete()
+			for a in p.auths:
+				self.dbs.delete(a)
 		
 		self.dbs.commit()
 		return {"e":0}

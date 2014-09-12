@@ -64,7 +64,7 @@ class Auth(db.Base):
 	id       = db.Column("id", db.HexLong, primary_key=True)
 	__pass   = db.Column("pass", db.String)
 	__ctime  = db.Column("ctime", db.DateTime, default=lambda: datetime.utcnow())
-	__userid = db.Column("userid", db.ForeignKey("person.id"))
+	_userid  = db.Column("userid", db.ForeignKey("person.id"))
 	perms    = db.Column("perms", db.JSON);
 	
 	@staticmethod

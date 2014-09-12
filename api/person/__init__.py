@@ -69,7 +69,8 @@ class Person(db.Base):
 	emails = db.relationship(Email, cascade="all, delete-orphan",
 	                         backref=db.backref("user", lazy="joined"))
 	
-	auths = db.relationship("Auth", cascade="all, delete-orphan",
+	auths = db.relationship("Auth", foreign_keys="Auth._userid",
+	                        cascade="all, delete-orphan",
 	                        backref=db.backref("user", lazy="joined"))
 	
 	tbt_books = db.relationship("TBTBook", foreign_keys="TBTBook._sellerid",
