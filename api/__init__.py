@@ -100,7 +100,7 @@ class Handler(framework.Handler):
 			self.headers["Access-Control-Allow-Origin"] = self.req.headers.get("Origin", "")
 		
 		self.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-		self.headers["Access-Control-Allow-Headers"] = "Accept, Authorization, Content-Type"
+		self.headers["Access-Control-Allow-Headers"] = "Accept, Authorization, Content-Type, X-CSES-Path"
 		self.headers["Access-Control-Max-Age"]       = "31536000"
 	
 	def OPTIONS(self, *args):
@@ -271,7 +271,7 @@ cacheday     = cache(3600*24, 3600*3, 3600*24)
 cacheforever = cache(3600*365, 3600*365, 3600*365)
 
 @app.route("/")
-class index(framework.Handler):
+class index(Handler):
 	@cacheforever
 	def GET(self):
 		self.content_type = "text/plain; charset=utf-8"
@@ -287,6 +287,7 @@ class Default(Handler):
 		}
 app.catchall = Default
 
+import api.handler
 import api.auth.handler
 
 import api.banner.handler
