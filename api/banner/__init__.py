@@ -64,8 +64,8 @@ class Banner(db.Base):
 	__tablename__ = "banner"
 	
 	id      = db.Column(db.Hex, primary_key=True)
-	alt     = db.Column(db.String)
-	href    = db.Column(db.String)
+	alt     = db.Column(db.StringStripped)
+	href    = db.Column(db.StringStripped)
 	added   = db.Column(db.DateTime, default=datetime.utcnow())
 	removed = db.Column(db.DateTime)
 	

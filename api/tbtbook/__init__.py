@@ -89,7 +89,7 @@ class TBTBookChange(db.Base):
 	__userid = db.Column("user", db.ForeignKey("person.id"))
 	__bookid = db.Column("book", db.ForeignKey("tbt_book.id"))
 	
-	desc = db.Column(db.String, nullable=False)
+	desc = db.Column(db.StringStripped, nullable=False)
 
 class TBTBook(db.Base):
 	""" A book.
@@ -98,9 +98,9 @@ class TBTBook(db.Base):
 	__tablename__ = "tbt_book"
 	
 	id        = db.Column(db.Hex, primary_key=True)
-	title     = db.Column(db.String, nullable=False)
-	author    = db.Column(db.String, nullable=False)
-	edition   = db.Column(db.String, default="")
+	title     = db.Column(db.StringStripped, nullable=False)
+	author    = db.Column(db.StringStripped, nullable=False)
+	edition   = db.Column(db.StringStripped, default="")
 	price     = db.Column(db.Integer, nullable=False)
 	paid      = db.Column(db.Boolean, default=False)
 	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"))

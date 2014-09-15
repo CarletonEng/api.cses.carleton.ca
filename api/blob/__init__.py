@@ -48,8 +48,8 @@ class Blob(db.Base):
 	__tablename__ = 'blob'
 	
 	id   = db.Column(db.HexLong, primary_key=True)
-	mime = db.Column(db.String, default=lambda:"application/octet-stream")
-	enc  = db.Column(db.String)
+	mime = db.Column(db.StringStripped, default=lambda:"application/octet-stream")
+	enc  = db.Column(db.StringStripped)
 	perm = db.Column(db.JSON, default=lambda: False)
 	
 	datapath = app.config.datapath+"blobs/"

@@ -107,3 +107,12 @@ class ListSorted(JSON):
 	def process_bind_param(self, value, dialect):
 		value.sort()
 		return super().process_bind_param(value, dialect)
+
+class StringStripped(TypeDecorator):
+	impl = String
+	
+	def process_bind_param(self, value, dialect):
+		return value.strip()
+	
+	def process_result_value(self, value, dialect):
+		return value

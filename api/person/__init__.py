@@ -36,7 +36,7 @@ class Email(db.Base):
 	
 	__tablename__ = "person_email"
 	
-	email    = db.Column(db.String, primary_key=True)
+	email    = db.Column(db.StringStripped, primary_key=True)
 	__userid = db.Column("userid", db.ForeignKey("person.id"), primary_key=True)
 	rank     = db.Column(db.Integer, nullable=False, default=lambda:1)
 	
@@ -61,9 +61,9 @@ class Person(db.Base):
 	
 	id       = db.Column(db.Hex, primary_key=True)
 	number   = db.Column(db.Integer, unique=True, nullable=False)
-	name     = db.Column(db.String, nullable=False)
-	namefull = db.Column(db.String, nullable=False)
-	__pw     = db.Column("pw", db.String, server_default="!")
+	name     = db.Column(db.StringStripped, nullable=False)
+	namefull = db.Column(db.StringStripped, nullable=False)
+	__pw     = db.Column("pw", db.String, server_default="!", nullable=False)
 	perms    = db.Column(db.ListSorted, default=lambda:["selfr", "selfw"])
 	
 	emails = db.relationship(Email, cascade="all, delete-orphan",
