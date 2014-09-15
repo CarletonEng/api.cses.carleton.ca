@@ -34,7 +34,7 @@ from api.tbtbook import TBTBook, TBTBookChange, Course, CourseCode
 
 @api.app.route("/tbt/book")
 class index(api.Handler):
-	@api.dbs
+	@auth
 	@api.json_out
 	@api.cachemin
 	def GET(self):
@@ -63,6 +63,21 @@ class index(api.Handler):
 				words = words[:5]
 			
 			q = q.filter(*(TBTBook.title.ilike("%"+t+"%") for t in words))
+		
+		if "involves" in uq:
+			if not self.req.auth:
+				self.status_code = 401
+				return {"e":0, "msg":"You must authenticate to filter by involvement."}
+			
+			inv = uq["involves"][0]
+			
+			if inv != self.req.auth.user.id:
+				self.status_code = 403
+				return {"e":0, "msg":"You can only search for your own involvement."}
+			
+			q = q.filter(
+				(TBTBook.seller == Person(id=inv)) | (TBTBook.buyer == Person(id=inv))
+			)
 		
 		q = q.group_by(TBTBook.id)
 		
