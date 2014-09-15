@@ -188,6 +188,7 @@ class book(api.Handler):
 			"author":  b.author,
 			"price":   b.price/100,
 			"courses": [c.code for c in b.courses],
+			"buyer":   bool(b.buyer), # Anyone can see if a book is sold.
 		}
 		
 		if self.req.auth and "tbt" in self.req.auth.perms:
