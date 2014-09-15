@@ -113,9 +113,6 @@ class index(HandlerPerson):
 		if not "number" in j:
 			self.status_code = 400
 			return {"e":1, "msg":"Number required."}
-		if not "name" in j and j["name"]:
-			self.status_code = 400
-			return {"e":1, "msg":"Name required."}
 		
 		p.name     = j["name"]
 		p.namefull = j["namefull"]
