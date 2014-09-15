@@ -71,15 +71,17 @@ class index(HandlerPerson):
 			s = uq["number"][0]
 			mult = 10**(9-len(s))
 			n = int(s)
-			min = (n  ) * mult
-			max = (n+1) * mult
+			minn = (n  ) * mult
+			maxn = (n+1) * mult
 			
-			q = q.filter(Person.number >= min, Person.number < max)
+			q = q.filter(Person.number >= minn, Person.number < maxn)
 		
-		q = q.limit(min(
-			uq.get("limit", index.SEARCH_RESULTS_DEFAULT),
-			index.SEARCH_RESULTS_MAX
-		))
+		limit = index.SEARCH_RESULTS_DEFAULT
+		if "limit" in uq:
+			limit = int(uq["limit"][0])
+		limit = min(limit, index.SEARCH_RESULTS_MAX)
+		
+		q = q.limit(limit)
 		
 		return {"e":0,
 			"people": [{
