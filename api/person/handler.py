@@ -45,6 +45,9 @@ class HandlerPerson(api.Handler):
 
 @api.app.route("/person")
 class index(HandlerPerson):
+	SEARCH_RESULTS_MAX     = 1024
+	SEARCH_RESULTS_DEFAULT =   32
+	
 	@auth
 	@api.json_out
 	@api.dbs
@@ -73,7 +76,10 @@ class index(HandlerPerson):
 			
 			q = q.filter(Person.number >= min, Person.number < max)
 		
-		q = q.limit(20)
+		q = q.limit(min(
+			uq.get("limit", index.SEARCH_RESULTS_DEFAULT),
+			index.SEARCH_RESULTS_MAX
+		))
 		
 		return {"e":0,
 			"people": [{
