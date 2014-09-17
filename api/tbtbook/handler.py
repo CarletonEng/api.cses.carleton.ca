@@ -172,7 +172,7 @@ class stats(api.Handler):
 		
 		b,  p  = total.one()
 		bs, ps = sold.one()
-		bp, pp = sold.one()
+		bp, pp = paid.one()
 		
 		# A sum of no elements is None, not 0
 		

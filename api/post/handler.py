@@ -43,23 +43,40 @@ class index(api.Handler):
 		q = self.dbs.query(Post.id)
 		
 		t = uq.get("type", ("article",))[-1]
-		if t != "all":
+		if t == "all":
+			self.status_code = 400
+			return {"e":0, "msg": "You may not find all posts."}
+		else:
 			q = q.filter(Post.type == t)
 		
-		if "dir" in uq:
-			q = q.filter(Post.directory == uq["dir"][-1].rstrip("/"))
+		# if "prefix" in uq:
+		# 	q = q.filter(db.prefixof(Post.id, uq["prefix"][-1]))
 		
-		if "prefix" in uq:
-			q = q.filter(db.prefixof(Post.id, uq["prefix"][-1]))
+		### Ordering
+		orderby = uq.get("order", ("-created",))[-1]
+		rev = False
+		if orderby[0] == "-":
+			orderby = orderby[1:]
+			rev = True
 		
-		orderby = uq.get("order", ("id",))[-1]
-		if orderby == "id":
-			q = q.order_by(Post.id)
-		elif orderby == "title":
-			q = q.order_by(Post.title)
+		if orderby == "created":
+			obsql = Post.created
 		else:
 			self.status_code = 400
 			return {"e":0, "msg":"Invalid 'order' value."}
+		
+		if rev:
+			obsql = obsql.desc()
+		
+		q = q.order_by(obsql);
+		
+		### Limiting
+		limit = 16 # Default limit.
+		if "limit" in uq:
+			limit = int(uq["limit"][0])
+		limit = min(limit, 128) # Hard max.
+		
+		q = q.limit(limit)
 		
 		return {"e":0,
 			"posts": list(q),
@@ -73,9 +90,10 @@ class person(api.Handler):
 	@api.cacheday
 	def GET(self, p):
 		return {"e":0,
-			"id":      p.id,
 			"type":    p.type,
 			"title":   p.title,
+			"created": p.created.timestamp(),
+			"updated": p.updated.timestamp(),
 			"content": p.content,
 		}
 	
