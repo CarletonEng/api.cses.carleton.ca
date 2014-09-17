@@ -52,7 +52,9 @@ class index(api.Handler):
 			if len(c) == 8:
 				p = Course.code == c
 			else:
-				p = Course.code.like(c+"%")
+				# "Increment" the string so a range scan of the index can be used.
+				e = c[:-1]+chr(ord(c[-1])+1)
+				p = (c <= Course.code) & (Course.code < e)
 			
 			q = q.join(Course).filter(p)
 		
@@ -197,20 +199,22 @@ class book(api.Handler):
 	@api.cachemin
 	def GET(self, b):
 		
+		#TODO: Optimize query, pulling in person.
+		
 		r = {"e":0,
 			"title":   b.title,
 			"edition": b.edition,
 			"author":  b.author,
 			"price":   b.price/100,
 			"courses": [c.code for c in b.courses],
-			"buyer":   bool(b.buyer), # Anyone can see if a book is sold.
+			"buyer":   bool(b._buyerid), # Anyone can see if a book is sold.
 		}
 		
 		if self.req.auth and "tbt" in self.req.auth.perms:
 			r.update({
 				"paid": b.paid,
-				"seller":  b.seller.id,
-				"buyer":   b.buyer and b.buyer.id,
+				"seller":  b._sellerid,
+				"buyer":   b._buyerid,
 			})
 		
 		return r;

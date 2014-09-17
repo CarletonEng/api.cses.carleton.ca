@@ -30,12 +30,13 @@ from binascii import hexlify, unhexlify
 
 import sqlalchemy
 from sqlalchemy import Column, Boolean, Integer, String, BINARY, ForeignKey, DateTime
+from sqlalchemy import Index
 from sqlalchemy.exc import StatementError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, expression
 
 import api
 from api import app
@@ -112,7 +113,7 @@ class StringStripped(TypeDecorator):
 	impl = String
 	
 	def process_bind_param(self, value, dialect):
-		return value.strip()
+		return value and value.strip()
 	
 	def process_result_value(self, value, dialect):
 		return value

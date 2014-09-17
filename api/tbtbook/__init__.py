@@ -71,15 +71,19 @@ class Course(db.Base):
 	
 	__tablename__ = "tbt_book_course"
 	
-	__id = db.Column("id", db.Integer, primary_key=True)
-	code = db.Column("code", CourseCode, index=True, nullable=False)
-	__bookid = db.Column("bookid", db.ForeignKey("tbt_book.id"))
+	__id    = db.Column("id", db.Integer, primary_key=True)
+	code    = db.Column("code", CourseCode, nullable=False)
+	_bookid = db.Column("bookid", db.ForeignKey("tbt_book.id"))
 	
 	def __init__(self, code, **kwargs):
 		super().__init__(code=code, *kwargs)
 	
 	def __repr__(self):
 		return repr(self.code)
+
+# Include the other parameter for a covering index.
+db.Index("tbt_book_course_code_idx",    Course.code,    Course._bookid)
+db.Index("tbt_book_course_code_revidx", Course._bookid, Course.code)
 
 class TBTBookChange(db.Base):
 	__tablename__ = "tbt_book_change"
@@ -100,14 +104,14 @@ class TBTBook(db.Base):
 	id        = db.Column(db.Hex, primary_key=True)
 	title     = db.Column(db.StringStripped, nullable=False)
 	author    = db.Column(db.StringStripped, nullable=False)
-	edition   = db.Column(db.StringStripped, default="")
+	edition   = db.Column(db.StringStripped, default="", server_default="")
 	price     = db.Column(db.Integer, nullable=False)
-	paid      = db.Column(db.Boolean, default=False)
-	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"))
-	_sellerid = db.Column("seller", db.ForeignKey("person.id"))
+	paid      = db.Column(db.Boolean, default=False, server_default=db.expression.false())
+	_sellerid = db.Column("seller", db.ForeignKey("person.id"), index=True, nullable=False)
+	_buyerid  = db.Column("buyer", db.ForeignKey("person.id"), index=True)
 	
 	courses = db.relationship("Course", cascade="all, delete-orphan",
-	                          backref=db.backref("book"))
+	                          backref=db.backref("book"), lazy="joined")
 	
 	changes = db.relationship("TBTBookChange", cascade="all, delete-orphan",
 	                          backref=db.backref("book"))

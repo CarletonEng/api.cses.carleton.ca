@@ -39,7 +39,7 @@ class index(api.Handler):
 	def GET(self):
 		return {"e":0,
 			"perms": self.req.auth.perms,
-			"user": self.req.auth.user.id,
+			"user": self.req.auth._userid,
 		}
 	
 	@api.cachenostore

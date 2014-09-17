@@ -70,7 +70,7 @@ class Banner(db.Base):
 	removed = db.Column(db.DateTime)
 	
 	images = db.relationship("BannerImage", cascade="all, delete-orphan",
-	                          backref=db.backref("banner"))
+	                         lazy="joined", backref=db.backref("banner"))
 	
 	@db.hybrid_property
 	def up(self):
@@ -79,3 +79,5 @@ class Banner(db.Base):
 	
 	def __repr__(self):
 		return api.autorepr(self, self.id, self.alt)
+
+db.Index("banner_time", Banner.added, Banner.removed)

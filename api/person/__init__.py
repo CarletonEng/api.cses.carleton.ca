@@ -71,10 +71,10 @@ class Person(db.Base):
 	
 	auths = db.relationship("Auth", foreign_keys="Auth._userid",
 	                        cascade="all, delete-orphan",
-	                        backref=db.backref("user", lazy="joined"))
+	                        backref=db.backref("user"))
 	
 	tbt_books = db.relationship("TBTBook", foreign_keys="TBTBook._sellerid",
-	                            backref=db.backref("seller", lazy="joined"))
+	                            backref=db.backref("seller"))
 	tbt_booksbought = db.relationship("TBTBook", foreign_keys="TBTBook._buyerid",
 	                                  backref=db.backref("buyer"))
 	tbt_changes = db.relationship("TBTBookChange", backref=db.backref("user"))
