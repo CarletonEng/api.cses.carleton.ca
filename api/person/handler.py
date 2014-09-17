@@ -129,9 +129,9 @@ class index(HandlerPerson):
 			"id": p.id,
 		}
 
-@api.app.route("/person/([^/]*)")
+@api.app.route("/person/(\\d*)")
 class person(HandlerPerson):
-	@api.dbfetch(Person)
+	@api.dbfetchint(Person)
 	@auth
 	@api.json_out
 	@api.cachehour
@@ -156,7 +156,7 @@ class person(HandlerPerson):
 		return r
 	
 	@api.cachenostore
-	@api.dbfetch(Person)
+	@api.dbfetchint(Person)
 	@auth
 	@api.json_io
 	def PUT(self, p):
@@ -185,7 +185,7 @@ class person(HandlerPerson):
 		self.dbs.commit()
 		return {"e":0, "id":p.id}
 
-@api.app.route("/person/([^/]*)/pass")
+@api.app.route("/person/(\\d*)/pass")
 class person(HandlerPerson):
 	@api.dbfetch(Person)
 	@authrequired

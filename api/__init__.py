@@ -130,14 +130,18 @@ def dbs(f):
 				self.dbs.close()
 	return w
 
-def dbfetch(klass, arg=1):
+def dbfetch(klass, arg=1, convert=None):
 	arg -= 1
 	def d(f):
 		@dbs
 		def w(self, *args):
 			args = list(args)
 			try:
-				args[arg] = self.dbs.query(klass).get(args[arg-1])
+				v = args[arg-1]
+				if convert:
+					v = convert(v)
+				
+				args[arg] = self.dbs.query(klass).get(v)
 			except db.StatementError as e:
 				self.status_code = 400
 				self.content_type = "application/json; charset=utf-8"
@@ -153,6 +157,9 @@ def dbfetch(klass, arg=1):
 			return f(self, *args)
 		return w
 	return d
+
+def dbfetchint(*args, **kwargs):
+	return dbfetch(*args, convert=int, **kwargs)
 
 def json_in(f):
 	""" wrapper to parse json input.
