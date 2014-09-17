@@ -24,12 +24,20 @@
 #                                                                              #
 ################################################################################
 
-import createdb
+import os, shutil
 
-import api.person.sample
+os.environ["CSESAPI_DEBUG"] = "TRUE"
 
-import api.auth.sample
-import api.banner.sample
-import api.blob.sample
-import api.post.sample
-import api.tbtbook.sample
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+import api
+from api import app, db
+
+shutil.rmtree(app.config.datapath, ignore_errors=True)
+app.create()
+
+# Mark the database version.
+from alembic import command
+from alembic.config import Config
+alembic_cfg = Config("alembic.ini")
+command.stamp(alembic_cfg, "head")
