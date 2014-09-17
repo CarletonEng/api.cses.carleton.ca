@@ -40,13 +40,29 @@ class index(api.Handler):
 	def GET(self):
 		uq = parse_qs(self.req.query_string.decode(), keep_blank_values=True)
 		
-		dbq = self.dbs.query(Post.id, Post.title)
+		q = self.dbs.query(Post.id)
+		
+		t = uq.get("type", ("article",))[-1]
+		if t != "all":
+			q = q.filter(Post.type == t)
 		
 		if "dir" in uq:
-			dbq = dbq.filter(Post.directory == uq["dir"][-1].rstrip("/"))
+			q = q.filter(Post.directory == uq["dir"][-1].rstrip("/"))
+		
+		if "prefix" in uq:
+			q = q.filter(db.prefixof(Post.id, uq["prefix"][-1]))
+		
+		orderby = uq.get("order", ("id",))[-1]
+		if orderby == "id":
+			q = q.order_by(Post.id)
+		elif orderby == "title":
+			q = q.order_by(Post.title)
+		else:
+			self.status_code = 400
+			return {"e":0, "msg":"Invalid 'order' value."}
 		
 		return {"e":0,
-			"posts": [{"id":id, "title": title} for id, title in dbq],
+			"posts": list(q),
 		}
 
 @api.app.route("/post/(.*)")
@@ -78,6 +94,8 @@ class person(api.Handler):
 		
 		j = self.req.json
 		
+		if "type" in j:
+			p.type = j["type"]
 		if "title" in j:
 			p.title = j["title"]
 		if "content" in j:

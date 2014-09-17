@@ -52,9 +52,7 @@ class index(api.Handler):
 			if len(c) == 8:
 				p = Course.code == c
 			else:
-				# "Increment" the string so a range scan of the index can be used.
-				e = c[:-1]+chr(ord(c[-1])+1)
-				p = (c <= Course.code) & (Course.code < e)
+				p = db.prefixof(Course.code, c)
 			
 			q = q.join(Course).filter(p)
 		

@@ -117,3 +117,7 @@ class StringStripped(TypeDecorator):
 	
 	def process_result_value(self, value, dialect):
 		return value
+
+def prefixof(col, s):
+	e = s[:-1]+chr(ord(s[-1])+1)
+	return (s <= col) & (col < e)

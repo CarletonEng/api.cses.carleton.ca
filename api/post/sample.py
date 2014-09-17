@@ -48,4 +48,13 @@ post("dir/article", "An Article", "article 1")
 post("dir/artivle2", "Another one", "atr 2")
 post("dir", "Directory", "a dir", type="dir")
 
+post("1994/09/14/birthday", "Happy Birthday",
+     "<p>Today the author was born.</p>", type="article")
+post("2014/09/01/engfrosh", "Start of EngFrosh",
+     "<p>Welcome to EngFrosh!</p>", type="article")
+post("2014/09/13/tbt", "Textbook Trade",
+     "<p>The textbook trade is now open!</p>", type="article")
+post("3000/01/01/from-future", "Dear Past",
+     "<p>Hello, this is a message from the future.</p>", type="article")
+
 sess.commit()

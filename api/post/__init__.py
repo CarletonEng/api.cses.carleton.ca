@@ -46,25 +46,28 @@ class Post(db.Base):
 	
 	__tablename__ = 'post'
 	
-	__id    = db.Column("id", db.String, primary_key=True)
-	__dir   = db.Column("dir", db.String, index=True)
-	type    = db.Column(db.String, default=lambda:"page")
-	title   = db.Column(db.StringStripped)
-	content = db.Column(db.JSON, default=lambda:[]);
-	perms   = db.Column(db.JSON, default=None)
+	_id    = db.Column("id", db.String, primary_key=True, nullable=False)
+	_dir   = db.Column("dir", db.String, nullable=False)
+	type    = db.Column(db.String, default=lambda:"page", server_default="page", nullable=False)
+	title   = db.Column(db.StringStripped, nullable=False)
+	content = db.Column(db.String, nullable=False);
+	perms   = db.Column(db.JSON)
 	
 	@db.hybrid_property
 	def id(self):
-		return self.__id
+		return self._id
 	
 	@id.setter
 	def id(self, v):
-		self.__id  = v
-		self.__dir, _, _ = v.rpartition("/")
+		self._id  = v
+		self._dir, _, _ = v.rpartition("/")
 	
 	@db.hybrid_property
 	def directory(self):
-		return self.__dir
+		return self._dir
 	
 	def __repr__(self):
 		return api.autorepr(self, self.id, self.type)
+
+db.Index("post_type_idx", Post.type, Post._id)
+db.Index("post_dir_idx",  Post._dir, Post.type, Post._id)
