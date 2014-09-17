@@ -66,7 +66,7 @@ class index(api.Handler):
 			"new": new,
 		}
 
-@api.app.route("/blob/(.*)")
+@api.app.route("/blob/([A-Fa-f0-9]*)(?:/.*)?")
 def blob(app, req, id):
 	id = id.upper()
 	
