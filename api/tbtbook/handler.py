@@ -75,7 +75,7 @@ class index(api.Handler):
 				self.status_code = 401
 				return {"e":0, "msg":"You must authenticate to filter by involvement."}
 			
-			inv = uq["involves"][0]
+			inv = int(uq["involves"][0])
 			
 			if inv != self.req.auth.user.id:
 				self.status_code = 403
