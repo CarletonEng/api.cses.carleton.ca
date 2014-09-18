@@ -287,23 +287,6 @@ cachehour    = cache(3600, 3600, 3600*4)
 cacheday     = cache(3600*24, 3600*3, 3600*24)
 cacheforever = cache(3600*365, 3600*365, 3600*365)
 
-@app.route("/")
-class index(Handler):
-	@cacheforever
-	def GET(self):
-		self.content_type = "text/plain; charset=utf-8"
-		self.data = "This is the API, go away.\n"
-
-class Default(Handler):
-	@json_out
-	@cachehour
-	def default(self):
-		self.status_code = 404
-		return {"e": 404,
-			"msg": "The requested URL {} is not part of the API.".format(self.req.path),
-		}
-app.catchall = Default
-
 import api.handler
 import api.auth.handler
 

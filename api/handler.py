@@ -26,6 +26,30 @@
 
 import api
 
+class Default(api.Handler):
+	@api.json_out
+	@api.cachehour
+	def default(self):
+		self.status_code = 404
+		return {"e": 404,
+			"msg": "The requested URL {} is not part of the API.".format(self.req.path),
+		}
+api.app.catchall = Default
+
+@api.app.route("/")
+class index(api.Handler):
+	@api.cacheforever
+	def GET(self):
+		self.content_type = "text/plain; charset=utf-8"
+		self.data = "This is the API, go away.\n"
+
+@api.app.route("/ping")
+class ping(api.Handler):
+	@api.cachenocache
+	def GET(self):
+		self.content_type = "application/json; charset=utf-8"
+		self.data = '{"e":0,"msg":"pong",uuid":"24c95108-0e85-4260-8083-2d86246442a7"}\n'
+
 def wsgi(env, start_response):
 	print(env)
 	if "HTTP_X_CSES_PATH" in env:
