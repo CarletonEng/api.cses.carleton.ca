@@ -30,6 +30,8 @@ from api import db
 from api.person import Person, Email
 from api.auth import Auth
 
+readonly_disable = api.readonly_disable
+
 @api.app.route("/auth")
 class index(api.Handler):
 	@api.dbs

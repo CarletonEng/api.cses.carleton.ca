@@ -31,6 +31,8 @@ from api import db
 from api.auth import auth
 from api.banner import Banner, BannerImage
 
+readonly_disable = api.readonly_disable
+
 @api.app.route("/banner")
 class index(api.Handler):
 	@api.dbs

@@ -33,8 +33,11 @@ from api import db
 from api.auth import auth, authrequired
 from api.blob import Blob
 
+readonly_disable = api.readonly_disable
+
 @api.app.route("/blob")
 class index(api.Handler):
+	@readonly_disable
 	@api.dbs
 	@authrequired
 	@api.json_out

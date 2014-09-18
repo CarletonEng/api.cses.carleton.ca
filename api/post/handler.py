@@ -31,6 +31,8 @@ from api import db
 from api.auth import auth, authrequired
 from api.post import Post
 
+readonly_disable = api.readonly_disable
+
 @api.app.route("/post")
 class index(api.Handler):
 	@api.dbs
@@ -97,6 +99,7 @@ class person(api.Handler):
 			"content": p.content,
 		}
 	
+	@readonly_disable
 	@authrequired
 	@api.json_io
 	def PUT(self, path):

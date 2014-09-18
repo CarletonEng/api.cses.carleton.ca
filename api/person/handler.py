@@ -31,6 +31,8 @@ from api import db
 from api.person import Person, Email
 from api.auth import Auth, auth, authrequired
 
+readonly_disable = api.readonly_disable
+
 class HandlerPerson(api.Handler):
 	def canwrite(self, p):
 		if not self.req.auth:
@@ -92,6 +94,7 @@ class index(HandlerPerson):
 			} for p in q]
 		}
 	
+	@readonly_disable
 	@api.cachenostore
 	@authrequired
 	@api.json_io
@@ -155,6 +158,7 @@ class person(HandlerPerson):
 		
 		return r
 	
+	@readonly_disable
 	@api.cachenostore
 	@api.dbfetchint(Person)
 	@auth
@@ -187,6 +191,7 @@ class person(HandlerPerson):
 
 @api.app.route("/person/(\\d*)/pass")
 class person(HandlerPerson):
+	@readonly_disable
 	@api.dbfetch(Person)
 	@authrequired
 	@api.json_io
