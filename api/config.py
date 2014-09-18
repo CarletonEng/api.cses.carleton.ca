@@ -34,7 +34,10 @@ root = os.path.realpath(__file__+"/../../")+"/"
 
 class Config:
 	def __init__(s):
-		s.debug    = bool(env.get("CSESAPI_DEBUG", False))
+		s.debug    = bool(env.get("CSESAPI_DEBUG"))
+		
+		s.readonly     = bool(env.get("CSESAPI_READONLY"))
+		s.readonly_tbt = bool(env.get("CSESAPI_READONLY_TBT"))
 		
 		s.datapath = env.get("CSESAPI_DATADIR", root+"cses-data/")
 		s.database = env.get("CSESAPI_DB",      "sqlite:///"+s.datapath+"cses.sqlite")

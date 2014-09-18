@@ -270,6 +270,16 @@ def cache(sec, *cacheargs, **cachekwargs):
 		return w
 	return d
 
+def readonly_responder(self, *args):
+	self.status_code = 503
+	self.data = '{"e":503,"msg":"The API is in read-only mode."}'
+
+def readonly_disable(f):
+	if app.config.readonly:
+		return readonly_responder
+	
+	return f
+
 cachenocache = cache(0, type="no-cache")
 cachenostore = cache(0, type="no-store")
 cachemin     = cache(60*3, 60, 60*15)

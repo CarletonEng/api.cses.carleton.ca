@@ -32,6 +32,12 @@ from api.auth import auth, authrequired
 from api.person import Person
 from api.tbtbook import TBTBook, TBTBookChange, Course, CourseCode
 
+def readonly_disable(f):
+	if api.app.config.readonly_tbt:
+		return api.readonly_responder
+	
+	return api.readonly_disable(f)
+
 @api.app.route("/tbt/book")
 class index(api.Handler):
 	@auth
@@ -85,6 +91,7 @@ class index(api.Handler):
 			"books": [r[0] for r in q],
 		}
 	
+	@readonly_disable
 	@api.cachenostore
 	@api.dbs
 	@auth
@@ -217,6 +224,7 @@ class book(api.Handler):
 		
 		return r;
 	
+	@readonly_disable
 	@api.dbfetch(TBTBook)
 	@authrequired
 	@api.json_io
@@ -274,6 +282,7 @@ class book(api.Handler):
 			"id": b.id,
 		}
 	
+	@readonly_disable
 	@api.dbfetch(TBTBook)
 	@authrequired
 	@api.json_out
