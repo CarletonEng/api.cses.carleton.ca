@@ -16,6 +16,12 @@ The personwrite permission allows you to modify any user.  This includes names, 
 
 Allows reading "private" information such as email, phone and student number of any user.
 
+### postw
+
+Allows creating and editing posts, including pages and articles.
+
+It should be noted that at this time posts are allowed to contain any HTML and therefore could have scripts embedded in them.  This means that some with the `postw` could escalate their privileges by stealing other user's sessions.  Only give this permission to people you trust.
+
 ### selfw
 
 Allow changing of your own information such as password, email, name and others.
