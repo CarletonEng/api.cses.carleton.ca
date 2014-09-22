@@ -48,8 +48,14 @@ class index(api.Handler):
 		
 		q = self.dbs.query(TBTBook.id)
 		
-		if "sold" not in uq:
+		sold = uq.get("sold", ("0",))[-1]
+			
+		if sold == "":
+			pass # Include any sold status.
+		elif sold == "0":
 			q = q.filter(TBTBook.buyer == None)
+		else:
+			q = q.filter(TBTBook.buyer != None)
 		
 		if "course" in uq:
 			c = CourseCode.clean(uq["course"][0])
@@ -73,17 +79,30 @@ class index(api.Handler):
 		if "involves" in uq:
 			if not self.req.auth:
 				self.status_code = 401
-				return {"e":0, "msg":"You must authenticate to filter by involvement."}
+				return {"e":1, "msg":"You must authenticate to filter by involvement."}
 			
 			inv = int(uq["involves"][0])
 			
 			if inv != self.req.auth.user.id:
 				self.status_code = 403
-				return {"e":0, "msg":"You can only search for your own involvement."}
+				return {"e":1, "msg":"You can only search for your own involvement."}
 			
 			q = q.filter(
 				(TBTBook.seller == Person(id=inv)) | (TBTBook.buyer == Person(id=inv))
 			)
+		
+		if "paid" in uq:
+			if not self.req.auth:
+				self.status_code = 401
+				return {"e":1,"msg":"You must authenticate to filter by paid."}
+			
+			if not "tbt" in self.req.auth.perms:
+				self.status_code = 403
+				return {"e":1, "msg":"You may not filter by paid."}
+			
+			paid = uq["paid"][-1]
+			
+			q = q.filter(TBTBook.paid == (paid != "0"))
 		
 		q = q.group_by(TBTBook.id)
 		
