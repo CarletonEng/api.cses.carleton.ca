@@ -26,8 +26,13 @@
 
 import re
 import json
-import os.path
+import os, os.path
+import time
 import traceback
+
+# Force timezone UTC.
+os.environ["TZ"] = "UTC"
+time.tzset()
 
 from api import framework
 from api.config import Config
