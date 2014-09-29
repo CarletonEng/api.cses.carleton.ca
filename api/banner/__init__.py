@@ -35,7 +35,7 @@ class BannerImage(db.Base):
 	
 	__tablename__ = "banner_image"
 	
-	id     = db.Column(db.Hex, primary_key=True)
+	id     = db.Column(db.Integer, primary_key=True)
 	blob   = db.Column("blob", db.ForeignKey("blob.id"), nullable=False)
 	width  = db.Column(db.Integer, nullable=False)
 	height = db.Column(db.Integer, nullable=False)
@@ -63,7 +63,7 @@ class Banner(db.Base):
 	
 	__tablename__ = "banner"
 	
-	id      = db.Column(db.Hex, primary_key=True)
+	id      = db.Column(db.Integer, primary_key=True)
 	path    = db.Column(db.StringStripped, nullable=False, server_default="/", default="/")
 	alt     = db.Column(db.StringStripped, nullable=False, server_default="",  default="")
 	href    = db.Column(db.StringStripped)
