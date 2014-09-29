@@ -33,14 +33,15 @@ from api.banner import Banner, BannerImage
 
 readonly_disable = api.readonly_disable
 
-@api.app.route("/banner")
+@api.app.route("/banner(/.*)")
 class index(api.Handler):
 	@api.dbs
 	@api.json_out
 	# Seeing a slightly old banner is no big deal but we want it to load fast.
 	@api.cache(60*5, 3600*24, 3600*24*14)
-	def GET(self):
+	def GET(self, path):
 		banners = (self.dbs.query(Banner)
+		                   .filter(Banner.path == path)
 		                   .filter(Banner.up)
 		                   .order_by(Banner.added))
 		return {"e":0,
