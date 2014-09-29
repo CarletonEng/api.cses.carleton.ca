@@ -40,7 +40,7 @@ class BannerImage(db.Base):
 	width  = db.Column(db.Integer, nullable=False)
 	height = db.Column(db.Integer, nullable=False)
 	
-	__bannerid = db.Column("banner", db.ForeignKey("banner2.id"), nullable=False)
+	__bannerid = db.Column("banner", db.ForeignKey("banner.id"), nullable=False)
 	
 	@classmethod
 	def fits(w, h):
@@ -61,11 +61,11 @@ class Banner(db.Base):
 				Alt text.
 	"""
 	
-	__tablename__ = "banner2"
+	__tablename__ = "banner"
 	
 	id      = db.Column(db.Hex, primary_key=True)
 	path    = db.Column(db.StringStripped, nullable=False, server_default="/", default="/")
-	alt     = db.Column(db.StringStripped)
+	alt     = db.Column(db.StringStripped, nullable=False, server_default="",  default="")
 	href    = db.Column(db.StringStripped)
 	added   = db.Column(db.DateTime, default=datetime.utcnow())
 	removed = db.Column(db.DateTime)
@@ -81,4 +81,4 @@ class Banner(db.Base):
 	def __repr__(self):
 		return api.autorepr(self, self.id, self.alt)
 
-db.Index("banner2_time", Banner.path, Banner.added, Banner.removed)
+db.Index("banner_time", Banner.path, Banner.added, Banner.removed)
