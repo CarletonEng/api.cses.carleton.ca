@@ -74,15 +74,18 @@ def blob(app, req, id):
 	id = id.upper()
 	
 	def wsgi(env, start_response):
+		cors = [
+			("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
+			("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
+			("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
+			("Access-Control-Max-Age", "31536000"),
+		]
+		
 		# Handle ETags.
 		if env.get("HTTP_IF_NONE_MATCH", "") == '"'+id+'"':
 			start_response("304 NOT MODIFIED", [
-				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
-				("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
-				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
-				("Access-Control-Max-Age", "31536000"),
-			])
+				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000"),
+			] + cors)
 			return ()
 		
 		sess = db.Session()
@@ -93,11 +96,7 @@ def blob(app, req, id):
 				start_response("404 NOT FOUND", [
 					("Content-Type", "application/json; charset=utf-8"),
 					("Content-Length", str(len(r))),
-					("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-					("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
-					("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
-					("Access-Control-Max-Age", "31536000"),
-				])
+				] + cors)
 				return r,
 			
 			h = [
@@ -105,15 +104,11 @@ def blob(app, req, id):
 				("Content-Length", str(b.size)),
 				("ETag", '"'+b.id+'"'),
 				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
-				("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
-				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
-				("Access-Control-Max-Age", "31536000"),
 			]
 			if b.enc:
 				h.append(("Content-Encoding", b.enc))
 			
-			start_response("200 OK", h)
+			start_response("200 OK", h+cors)
 			return wrap_file(env, b.open())
 		finally:
 			sess.close()
