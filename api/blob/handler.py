@@ -79,9 +79,9 @@ def blob(app, req, id):
 			start_response("304 NOT MODIFIED", [
 				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
 				("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")),
-				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path")),
-				("Access-Control-Max-Age", "31536000")),
+				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
+				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
+				("Access-Control-Max-Age", "31536000"),
 			])
 			return ()
 		
@@ -94,9 +94,9 @@ def blob(app, req, id):
 					("Content-Type", "application/json; charset=utf-8"),
 					("Content-Length", str(len(r))),
 					("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-					("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")),
-					("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path")),
-					("Access-Control-Max-Age", "31536000")),
+					("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
+					("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
+					("Access-Control-Max-Age", "31536000"),
 				])
 				return r,
 			
@@ -106,9 +106,9 @@ def blob(app, req, id):
 				("ETag", '"'+b.id+'"'),
 				("Cache-Control", "no-cache" if app.config.debug else "public,max-age=31536000")
 				("Access-Control-Allow-Origin", env.get("HTTP_ORIGIN", "")),
-				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")),
-				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path")),
-				("Access-Control-Max-Age", "31536000")),
+				("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"),
+				("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSES-Path"),
+				("Access-Control-Max-Age", "31536000"),
 			]
 			if b.enc:
 				h.append(("Content-Encoding", b.enc))
