@@ -100,9 +100,7 @@ class Handler(framework.Handler):
 			self.data = '{"e":500,"msg":"Internal Server Error."}\n'
 	
 	def before(self):
-		if (getattr(self.__class__, "origin_any", False) or
-		    originre.match(self.req.headers.get("Origin", ""))):
-			self.headers["Access-Control-Allow-Origin"] = self.req.headers.get("Origin", "")
+		self.headers["Access-Control-Allow-Origin"] = self.req.headers.get("Origin", "")
 		
 		self.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
 		self.headers["Access-Control-Allow-Headers"] = "Accept, Authorization, Content-Type, X-CSES-Path"
