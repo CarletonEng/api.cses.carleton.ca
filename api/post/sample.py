@@ -37,13 +37,10 @@ def post(id, title, content, **kwargs):
 	sess.add(p)
 	return p
 
-post("hello-world", "Hello, World!", "<p>This is a post!</p>")
-post("first-post", "I am awesome", "<p>f1rs+ p0$t n00b5</p>")
-post("irontimes", "Iron Times", "<p>homepage</p>foo<p>bar</p>")
-post("irontimes/authors", "Iron Times Authors", "<ul><li>someone</li><li>someone else</li></ul>")
-post("dir/article", "An Article", "article 1")
-post("dir/artivle2", "Another one", "atr 2")
-post("dir", "Directory", "a dir", type="dir")
+post("services", "Hello, World!", "<p>This is a post!</p>")
+post("publications", "I am awesome", "<p>f1rs+ p0$t n00b5</p>")
+post("publications/irontimes", "Iron Times", "<p>homepage</p>foo<p>bar</p>")
+post("publications/irontimes/authors", "Iron Times Authors", "<ul><li>someone</li><li>someone else</li></ul>")
 
 post("1994/09/14/birthday", "Happy Birthday",
      "<p>Today the author was born.</p>",
