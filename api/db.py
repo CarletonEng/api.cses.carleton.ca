@@ -29,8 +29,8 @@ import json
 from binascii import hexlify, unhexlify
 
 import sqlalchemy
-from sqlalchemy import Column, Boolean, Integer, String, BINARY, ForeignKey, DateTime
-from sqlalchemy import Index, event
+from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Index, event, LargeBinary
 from sqlalchemy.exc import StatementError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref
@@ -83,7 +83,7 @@ class HexLong(TypeDecorator):
 		storage of longer strings but loses the ability to act as an integer
 		such as auto-increment.
 	"""
-	impl = BINARY
+	impl = LargeBinary
 	
 	def __init__(self, length=None):
 		if length:
