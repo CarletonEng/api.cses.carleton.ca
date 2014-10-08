@@ -30,7 +30,7 @@ from binascii import hexlify, unhexlify
 
 import sqlalchemy
 from sqlalchemy import Column, Boolean, Integer, String, BINARY, ForeignKey, DateTime
-from sqlalchemy import Index
+from sqlalchemy import Index, event
 from sqlalchemy.exc import StatementError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref
@@ -38,10 +38,20 @@ from sqlalchemy.types import TypeDecorator
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func, expression
 
+import sqlite3
+
 import api
 from api import app
 
 engine  = sqlalchemy.create_engine(app.config.database, echo=app.config.debug)
+
+@event.listens_for(engine, "connect")
+def initalizedb(dbapi_connection, connection_record):
+	if isinstance(dbapi_connection, sqlite3.Connection):
+		cursor = dbapi_connection.cursor()
+		cursor.execute("PRAGMA foreign_keys=ON;")
+		cursor.close()
+
 Base    = declarative_base()
 Session = sessionmaker(bind=engine)
 
