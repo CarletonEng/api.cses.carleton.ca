@@ -101,7 +101,7 @@ class TBTBook(db.Base):
 	
 	__tablename__ = "tbt_book"
 	
-	id        = db.Column(db.Hex, primary_key=True)
+	id        = db.Column(db.Integer, primary_key=True)
 	title     = db.Column(db.StringStripped, nullable=False)
 	author    = db.Column(db.StringStripped, nullable=False)
 	edition   = db.Column(db.StringStripped, default="", server_default="")
