@@ -48,14 +48,11 @@ class index(api.Handler):
 		
 		q = self.dbs.query(TBTBook.id)
 		
-		sold = uq.get("sold", ("0",))[-1]
-			
-		if sold == "":
-			pass # Include any sold status.
-		elif sold == "0":
-			q = q.filter(TBTBook.buyer == None)
-		else:
-			q = q.filter(TBTBook.buyer != None)
+		if "sold" in uq:
+			if uq["sold"][0] == "0":
+				q = q.filter(TBTBook.buyer == None)
+			else:
+				q = q.filter(TBTBook.buyer != None)
 		
 		if "course" in uq:
 			c = CourseCode.clean(uq["course"][0])
