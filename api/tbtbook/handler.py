@@ -56,7 +56,6 @@ class index(api.Handler):
 		
 		if "course" in uq:
 			c = CourseCode.clean(uq["course"][0])
-			print (c)
 			
 			if len(c) == 8:
 				p = Course.code == c

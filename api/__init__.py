@@ -108,6 +108,18 @@ class Handler(framework.Handler):
 	
 	def OPTIONS(self, *args):
 		pass
+	
+	### Utility Meathods
+	
+	def hasperm(self, *perms):
+		if not self.req.auth:
+			return False
+		
+		for p in perms:
+			if p not in self.req.auth.perms:
+				return False
+		
+		return True
 
 from api import db
 
