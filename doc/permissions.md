@@ -8,6 +8,10 @@ The API uses a flexible permission system to control access levels.  Each user h
 
 The wheel permission puts you in the drivers seat.  You can change anyones permissions and reset anyones password.  Anyone with the wheel permission can gain complete access to the system by giving themselves permissions or hijacking another user's account.
 
+### mailinglist
+
+The mailinglist permission allows the user to see and remove requests to join the mailing list.
+
 ### personw
 
 The personwrite permission allows you to modify any user.  This includes names, emails, passwords and other information.  The only exception to this is that you can't change the password or recovery information of a user with the wheel permission unless you have the wheel permission as well.

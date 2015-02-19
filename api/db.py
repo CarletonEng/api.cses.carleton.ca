@@ -29,9 +29,9 @@ import json
 from binascii import hexlify, unhexlify
 
 import sqlalchemy
-from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Table, Column, Boolean, Integer, String, ForeignKey, DateTime
 from sqlalchemy import Index, event, LargeBinary
-from sqlalchemy.exc import StatementError
+from sqlalchemy.exc import DatabaseError, StatementError, IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, reconstructor, relationship, backref
 from sqlalchemy.types import TypeDecorator
@@ -43,7 +43,7 @@ import sqlite3
 import api
 from api import app
 
-engine  = sqlalchemy.create_engine(app.config.database, echo=app.config.debug)
+engine = sqlalchemy.create_engine(app.config.database, echo=app.config.debug)
 
 @event.listens_for(engine, "connect")
 def initalizedb(dbapi_connection, connection_record):
@@ -52,7 +52,8 @@ def initalizedb(dbapi_connection, connection_record):
 		cursor.execute("PRAGMA foreign_keys=ON;")
 		cursor.close()
 
-Base    = declarative_base()
+metadata = sqlalchemy.MetaData()
+Base    = declarative_base(metadata=metadata)
 Session = sessionmaker(bind=engine)
 
 class Hex(TypeDecorator):

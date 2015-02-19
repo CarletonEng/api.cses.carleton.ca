@@ -24,27 +24,81 @@
 #                                                                              #
 ################################################################################
 
-import api.db as db
-from api.person import Person, Email
+import api
+from api import db
+from api.auth import authrequired
+from api.mailinglist import MailingListSub
 
-sess = db.Session()
-
-def person(id, name, full, pw, perms):
-	p = Person(number=id,
-	           name=name,
-	           namefull=full,
-	           perms=perms)
-	p.password_set(pw)
-	sess.add(p)
-	return p
-
-k = person(999123456, "Kevin", "Kevin Cox", "passwd",
-           ["selfw","selfr","personr","personw","upload","tbt","postw","wheel",
-            "mailinglist"])
-sess.add(Email(user=k, email="kevincox@kevincox.ca"))
-person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw","tbt"])
-person(999111111, "John", "John Doe", "password1", ["selfr","selfw","postw"])
-person(999222222, "Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])
-person(999222232, "Support", "Support desk", "5", ["selfr","selfw","personr","personw"])
-
-sess.commit()
+@api.app.route("/mailinglist")
+class index(api.Handler):
+	@authrequired
+	@api.json_out
+	def GET(self):
+		if not "mailinglist" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e": 1, "msg": "You don't have permission."}
+		
+		q = self.dbs.query(
+			MailingListSub.id,
+			MailingListSub.date,
+			MailingListSub.email
+		)
+		
+		r = list(q)
+		maxid = 0
+		for i, v in enumerate(r):
+			maxid = max(maxid, v[0])
+			r[i] = {
+				"date":  v[1].timestamp(),
+				"email": v[2],
+			}
+		
+		return {"e": 0,
+			"requests": r,
+			"deletionkey": maxid,
+		}
+	
+	@api.dbs
+	@api.json_io
+	def POST(self):
+		j = self.req.json
+		if not j:
+			return
+		
+		if not "email" in j:
+			self.status_code = 400
+			return {"e": 1, "msg": "Email required."}
+		
+		self.dbs.add(MailingListSub(
+			email = j["email"]
+		))
+		
+		try: self.dbs.commit()
+		except db.IntegrityError as e:
+			if not "UNIQUE" in repr(e):
+				raise
+			
+			return {"e": 0, "pending": True}
+		
+		return {"e":0}
+	
+	@authrequired
+	@api.json_io
+	def DELETE(self):
+		if not "mailinglist" in self.req.auth.perms:
+			self.status_code = 403
+			return {"e": 1, "msg": "You don't have permission."}
+		
+		j = self.req.json
+		
+		if not "key" in j:
+			self.status_code = 400
+			return {"e":1, "msg": "Deletion key required."}
+		key = j["key"]
+		
+		q = self.dbs.query(MailingListSub).filter(MailingListSub.id <= key)
+		q.delete(synchronize_session=False)
+		
+		self.dbs.commit()
+		
+		return {"e":0}

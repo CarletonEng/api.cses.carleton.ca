@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-# Copyright 2014 Kevin Cox
+# Copyright 2015 Kevin Cox
 
 ################################################################################
 #                                                                              #
@@ -22,29 +22,29 @@
 #                                                                              #
 #  3. This notice may not be removed or altered from any source distribution.  #
 #                                                                              #
-################################################################################
+###############################################################################
 
-import api.db as db
-from api.person import Person, Email
+from datetime import datetime
 
-sess = db.Session()
+from api import db
 
-def person(id, name, full, pw, perms):
-	p = Person(number=id,
-	           name=name,
-	           namefull=full,
-	           perms=perms)
-	p.password_set(pw)
-	sess.add(p)
-	return p
-
-k = person(999123456, "Kevin", "Kevin Cox", "passwd",
-           ["selfw","selfr","personr","personw","upload","tbt","postw","wheel",
-            "mailinglist"])
-sess.add(Email(user=k, email="kevincox@kevincox.ca"))
-person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw","tbt"])
-person(999111111, "John", "John Doe", "password1", ["selfr","selfw","postw"])
-person(999222222, "Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])
-person(999222232, "Support", "Support desk", "5", ["selfr","selfw","personr","personw"])
-
-sess.commit()
+class MailingListSub(db.Base):
+	""" A Mailing list subscription request.
+		
+		Instance Attributes:
+			id:
+				The id of the request.
+			date:
+				The date the request was received.
+			email:
+				The email.
+	"""
+	
+	__tablename__ = "mailinglist_sub"
+	__table_args__ = {
+		"sqlite_autoincrement": True,
+	}
+	
+	id    = db.Column(db.Integer, primary_key=True)
+	date  = db.Column(db.DateTime, default=lambda: datetime.utcnow())
+	email = db.Column(db.String, unique=True)
