@@ -37,7 +37,7 @@ class Email(db.Base):
 	__tablename__ = "person_email"
 	
 	email    = db.Column(db.StringStripped, primary_key=True)
-	__userid = db.Column("userid", db.ForeignKey("person.id"), primary_key=True)
+	__userid = db.Column("userid", db.ForeignKey("person.id"), nullable=False)
 	rank     = db.Column(db.Integer, nullable=False, default=lambda:1)
 	
 	def __repr__(self):

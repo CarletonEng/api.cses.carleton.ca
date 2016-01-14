@@ -23,7 +23,9 @@ target_metadata = db.Base.metadata
 engine = db.engine
 
 connection = engine.connect()
-context.configure(connection=connection, target_metadata=target_metadata)
+context.configure(connection=connection,
+                  target_metadata=target_metadata,
+                  render_as_batch=True)
 
 try:
 	with context.begin_transaction():
