@@ -115,6 +115,9 @@ class index(HandlerPerson):
 		if not ("namefull" in j and j["namefull"]):
 			self.status_code = 400
 			return {"e":1, "msg":"Full name required."}
+		if not ("emails" in j and j["emails"]):
+			self.status_code = 400
+			return {"e":1, "msg":"At least one email is required."}
 		
 		p.name     = j["name"]
 		p.namefull = j["namefull"]

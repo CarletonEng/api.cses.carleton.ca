@@ -35,6 +35,9 @@ class Email(db.Base):
 	"""
 	
 	__tablename__ = "person_email"
+	__table_args__ = (
+		db.CheckConstraint("email like '_%@_%'", name="emailvalid"),
+	)
 	
 	email    = db.Column(db.StringStripped, primary_key=True)
 	__userid = db.Column("userid", db.ForeignKey("person.id"), nullable=False)

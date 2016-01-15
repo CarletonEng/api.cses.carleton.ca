@@ -29,7 +29,8 @@ import json
 from binascii import hexlify, unhexlify
 
 import sqlalchemy
-from sqlalchemy import Table, Column, Boolean, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Table, Column, Boolean, Integer, String, ForeignKey, \
+    DateTime, CheckConstraint
 from sqlalchemy import Index, event, LargeBinary
 from sqlalchemy.exc import DatabaseError, StatementError, IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
@@ -52,13 +53,15 @@ def initalizedb(dbapi_connection, connection_record):
 		cursor.execute("PRAGMA foreign_keys=ON;")
 		cursor.close()
 
-metadata = sqlalchemy.MetaData(naming_convention={
+naming_convention = {
     "ix": 'ix_%(column_0_label)s',
     "uq": "uq_%(table_name)s_%(column_0_name)s",
     "ck": "ck_%(table_name)s_%(constraint_name)s",
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "pk_%(table_name)s",
-})
+}
+
+metadata = sqlalchemy.MetaData(naming_convention=naming_convention)
 Base    = declarative_base(metadata=metadata)
 Session = sessionmaker(bind=engine)
 
