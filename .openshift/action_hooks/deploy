@@ -1,0 +1,9 @@
+#! /bin/bash
+
+set -e
+
+cd $OPENSHIFT_REPO_DIR
+
+export CSESAPI_DB="$OPENSHIFT_POSTGRESQL_DB_URL"
+
+alembic upgrade head
