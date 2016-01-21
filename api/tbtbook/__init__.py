@@ -37,7 +37,7 @@ class CourseCode(db.TypeDecorator):
 	impl = db.String
 	
 	CODE_STRIP = re.compile("[^A-Z0-9]+")
-	CODE_VALID = re.compile("[A-Z]{4}[0-9]{4}")
+	CODE_VALID = re.compile("[A-Z]{4}[0-9]{4}$")
 	
 	def __init__(self):
 		super().__init__(8)
@@ -48,7 +48,7 @@ class CourseCode(db.TypeDecorator):
 	
 	@staticmethod
 	def raw_valid(code):
-		return CourseCode.CODE_VALID.fullmatch(code)
+		return CourseCode.CODE_VALID.match(code)
 	
 	@staticmethod
 	def valid(code):
