@@ -52,7 +52,7 @@ class Blob(db.Base):
 	enc  = db.Column(db.StringStripped)
 	perm = db.Column(db.JSON, default=lambda: False)
 	
-	datapath = app.config.datapath+"blobs/"
+	datapath = os.path.join(app.config.datapath, "blobs/")
 	
 	def __init__(self, *, mime="application/octet-stream"):
 		super().__init__()
