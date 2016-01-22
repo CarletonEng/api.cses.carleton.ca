@@ -115,7 +115,12 @@ class index(api.Handler):
 			return {"e":1, "msg": "Authorizer is not a person."}
 		if not "tbt" in authorizer.perms:
 			self.status_code = 403
-			return {"e":1, "msg": "Authorizer is not allowed to make changes."}
+			return {
+				"e": 1,
+				"msg":
+					"Authorizer is not allowed to make changes. " +
+					"(They don't have the 'tbt' permission.)",
+			}
 		
 		seller = self.dbs.query(Person).get(self.req.json["seller"])
 		if not seller:
@@ -218,7 +223,7 @@ class book(api.Handler):
 	@authrequired
 	@api.json_io
 	def PUT(self, b):
-		if not "tbt" in self.req.auth.perms:
+		if not self.hasperm("tbt"):
 			self.status_code = 403
 			return {"e":1, "msg": "You are not allowed."}
 		
@@ -233,7 +238,12 @@ class book(api.Handler):
 			return {"e":1, "msg":"Authorizer does not exist."}
 		if not "tbt" in authorizer.perms:
 			self.status_code = 403
-			return {"e":1, "msg":"Authorizer is not allowed to make changes."}
+			return {
+				"e": 1,
+				"msg":
+					"Authorizer is not allowed to make changes. " +
+					"(They don't have the 'tbt' permission.)",
+			}
 		
 		if "buyer" in j:
 			if b.buyer:
@@ -276,9 +286,9 @@ class book(api.Handler):
 	@authrequired
 	@api.json_out
 	def DELETE(self, b):
-		if not "tbt" in self.req.auth.perms:
+		if not self.hasperm("tbt"):
 			self.status_code = 403
-			return {"e":1, "msg": "You are not allowed."}
+			return {"e":1, "msg": "You are not allowed. ('tbt' permission required.)"}
 		
 		print("Deleting", repr(b))
 		self.dbs.delete(b)
