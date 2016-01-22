@@ -1,6 +1,9 @@
+import api
+from api import auth
+
 @api.app.route("/mailinglist")
 class index(api.Handler):
-	@authrequired
+	@auth.authrequired
 	@api.json_out
 	def GET(self):
 		if not "mailinglist" in self.req.auth.perms:
@@ -51,7 +54,7 @@ class index(api.Handler):
 		
 		return {"e":0}
 	
-	@authrequired
+	@auth.authrequired
 	@api.json_io
 	def DELETE(self):
 		if not "mailinglist" in self.req.auth.perms:
