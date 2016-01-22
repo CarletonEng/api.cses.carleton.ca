@@ -109,10 +109,10 @@ class index(api.Handler):
 	@readonly_disable
 	@api.cachenostore
 	@api.dbs
-	@auth
+	@authrequired
 	@api.json_io
 	def PUT(self):
-		if "tbt" not in self.req.auth.perms:
+		if not self.hasperm("tbt"):
 			self.status_code = 403
 			return {"e":1, "msg": "Permission denied."}
 		

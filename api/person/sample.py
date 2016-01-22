@@ -38,13 +38,18 @@ def person(id, name, full, pw, perms):
 	sess.add(p)
 	return p
 
-k = person(999123456, "Kevin", "Kevin Cox", "passwd",
-           ["selfw","selfr","personr","personw","upload","tbt","postw","wheel",
-            "mailinglist"])
-sess.add(Email(user=k, email="kevincox@kevincox.ca"))
-person(999000000, "Jane", "Jane Smith", "enaj", ["selfr","selfw","tbt"])
-person(999111111, "John", "John Doe", "password1", ["selfr","selfw","postw"])
-person(999222222, "Jason Grey", "Jason Grey", "topsecret", ["selfr","selfw"])
-person(999222232, "Support", "Support desk", "5", ["selfr","selfw","personr","personw"])
+kevin = person(999123456,"Kevin", "Kevin Cox", "passwd",
+               ["selfw","selfr","personr","personw","upload",
+                "tbt","postw","wheel", "mailinglist"])
+person(999000000, "Jane", "Jane Smith", "enaj",
+       ["selfr","selfw","tbt"])
+person(999111111, "John", "John Doe", "password1",
+       ["selfr","selfw","postw"])
+person(999222222, "Jason Grey", "Jason Grey", "topsecret",
+       ["selfr","selfw"])
+person(999222232, "Support", "Support desk", "5",
+                 ["selfr","selfw","personr","personw"])
+
+sess.add(Email(user=kevin, email="kevincox@kevincox.ca"))
 
 sess.commit()

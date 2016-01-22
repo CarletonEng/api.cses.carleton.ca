@@ -1,0 +1,4 @@
+-r requirements.txt
+
+pytest==2.8.5
+webtest==2.0.20

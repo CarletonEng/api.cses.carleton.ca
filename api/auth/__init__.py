@@ -173,6 +173,7 @@ def authrequired(f):
 				self.headers["WWW-Authenticate"] = 'Bearer realm="http://cses.kevincox.ca/login"'
 			else:
 				self.headers["WWW-Authenticate"] = 'Bearer realm="http://cses.carleton.ca/login"'
+			self.content_type = "application/json"
 			self.data = '{"e":1,"msg":"Authorization required."}\n'
 		else:
 			return f(self, *args)

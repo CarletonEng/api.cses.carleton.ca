@@ -28,11 +28,11 @@
 
 import os, sys
 
-# os.environ["CSESAPI_DEBUG"] = "TRUE"
-
-from api import app
-
-bind = sys.argv[1] if len(sys.argv) > 1 else "localhost"
-
-app.create()
-app.devserver(host=bind)
+if __name__ == "__main__":
+	os.environ["CSESAPI_DEBUG"] = "TRUE"
+	
+	bind = sys.argv[1] if len(sys.argv) > 1 else "localhost"
+	
+	from api import app
+	app.create()
+	app.devserver(host=bind)

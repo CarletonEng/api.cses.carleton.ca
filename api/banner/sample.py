@@ -26,6 +26,7 @@
 
 import api.db as db
 from api.banner import Banner, BannerImage
+import api.blob.sample
 
 sess = db.Session()
 
