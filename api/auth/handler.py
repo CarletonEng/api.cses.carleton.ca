@@ -25,26 +25,32 @@ class index(api.Handler):
 		j = self.req.json
 		s = self.dbs
 		
-		if not "user" in j:
+		user = j.get("user")
+		if not user:
 			self.status_code = 400
 			return {"e":1, "msg":"No user provided."}
-		if not "pass" in j:
+		if not isinstance(user, str):
+			self.status_code = 400
+			return {"e":1, "msg":"'user' must be a string."}
+		
+		pw = j.get("pass")
+		if not pw:
 			self.status_code = 400
 			return {"e":1, "msg":"No password provided."}
 		
-		if "@" in j["user"]:
-			p = s.query(Person).join(Email).filter_by(email=j["user"]).scalar()
+		if "@" in user:
+			person = s.query(Person).join(Email).filter_by(email=user).scalar()
 		else:
-			p = s.query(Person).get(j["user"])
+			person = s.query(Person).get(user)
 		
-		if not p or not p.password_check(j["pass"]):
+		if not person or not person.password_check(j["pass"]):
 			self.status_code = 403
 			return {"e":1, "msg":"Invalid credentials."}
 		
-		a = Auth(p)
+		a = Auth(person)
 		s.add(a)
 		
-		a.perms = p.perms
+		a.perms = person.perms
 		
 		s.commit()
 		
