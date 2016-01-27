@@ -1,4 +1,5 @@
 -r requirements.txt
 
 pytest==2.8.5
+pytest-random==0.2
 webtest==2.0.20
