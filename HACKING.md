@@ -15,6 +15,12 @@ bar should show you a message.
 
 Congratulations.  You have the API up and running.
 
+## Sample Data
+
+You can load some sample data into the server by running `python3 bin/gensampledata.py`.
+
+Pro tip: The sample data includes an admin user with id `1` and password `passwd`.
+
 ## Directory layout.
 
 The directory layout matches the URL patterns.  For example `/auth/*` goes in
